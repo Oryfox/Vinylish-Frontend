@@ -8,6 +8,4 @@ import java.util.Optional;
 
 @Repository
 public interface TrackRepository extends JpaRepository<Track, Long> {
-    List<Track> findAllByAlbumArtistNameContainingIgnoreCase(String artist);
-    Optional<Track> findByAlbumArtistNameAndTitle(String artist, String title);
 }

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="artist">{{ artist.name }}</div>
+  <div v-if="artist">{{ artist }}</div>
 </template>
 
 <script>
@@ -14,7 +14,7 @@ export default {
   },
   methods: {
     getArtist() {
-      fetch("http://localhost:8080/artist?id=" + this.$route.params.id)
+      fetch("http://localhost:8080/artist?id=" + this.$route.params.name)
         .then((res) => res.json())
         .then((data) => (this.artist = data))
         .catch((error) => console.log(error));

@@ -9,8 +9,11 @@
       </select>
     </div>
 
-    <div class="list">
+    <div class="list" v-if="records.length > 0">
       <RecordItem v-for="record in records" :key="record.id" :record="record" />
+    </div>
+    <div class="record-list-empty" v-else>
+      Such emptiness
     </div>
   </div>
   <div v-else>{{error}}</div>
@@ -18,6 +21,7 @@
 
 <script>
 import RecordItem from "../components/RecordItem.vue";
+
 export default {
   components: {
     RecordItem,
@@ -48,12 +52,12 @@ export default {
       if (this.sortby === "artist") {
         this.records.sort(
           (a, b) =>
-            a.album.artist.name.toLowerCase() >
-            b.album.artist.name.toLowerCase()
+            a.artist.toLowerCase() >
+            b.artist.toLowerCase()
         );
       } else if (this.sortby === "title") {
         this.records.sort(
-          (a, b) => a.album.title.toLowerCase() > b.album.title.toLowerCase()
+          (a, b) => a.title.toLowerCase() > b.title.toLowerCase()
         );
       } else {
         this.getRecords();

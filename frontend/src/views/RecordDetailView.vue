@@ -4,8 +4,8 @@
       <div class="image">
         <img
           :src="
-            'http://localhost:8080/album/image?id=' +
-            this.record.album.id +
+            'http://localhost:8080/record/image?id=' +
+            this.record.id +
             '&time=' +
             Date.now()
           "
@@ -16,8 +16,8 @@
         />
         <img
           :src="
-            'http://localhost:8080/album/image?id=' +
-            this.record.album.id +
+            'http://localhost:8080/record/image?id=' +
+            this.record.id +
             '&time=' +
             Date.now()
           "
@@ -30,9 +30,9 @@
 
       <div>
         <table class="infopanel">
-          <tr v-if="this.record.album.releaseYear">
+          <tr v-if="this.record.releaseYear">
             <td>Release year:</td>
-            <td>{{ this.record.album.releaseYear }}</td>
+            <td>{{ this.record.releaseYear }}</td>
           </tr>
           <tr>
             <td>Vinyl color:</td>
@@ -56,26 +56,26 @@
         <button class="btn btn-warning" @click="toggleEditModal">
           Edit record
         </button>
-        <button class="btn btn-danger" @click="toggleDeleteModal">
+        <button class="btn btn-danger" @click="deleteRecord">
           Delete record
         </button>
       </div>
     </div>
     <div class="right-split">
       <span class="title">
-        <b>{{ this.record.album.title }}</b>
+        <b>{{ this.record.title }}</b>
       </span>
       <span class="artist underline" @click="goToArtist">{{
-        this.record.album.artist.name
+        this.record.artist
       }}</span>
 
       <div
         class="tracks"
-        v-if="this.record.album.tracks && this.record.album.tracks.length > 0"
+        v-if="this.record.tracks && this.record.tracks.length > 0"
       >
         <div
           class="track"
-          v-for="item in this.record.album.tracks"
+          v-for="item in this.record.tracks"
           :key="item.rank"
         >
           <span class="track-rank">
@@ -95,9 +95,9 @@
         <div class="modalheader">
           <span
             >Editing
-            <span class="highlighted">{{ this.record.album.title }}</span> by
+            <span class="highlighted">{{ this.record.title }}</span> by
             <span class="highlighted">{{
-              this.record.album.artist.name
+              this.record.artist
             }}</span></span
           >
           <button
@@ -110,14 +110,14 @@
           <div class="property-list">
             <div class="property">
               <label for="title">Album title</label>
-              <input type="text" id="title" v-model="this.record.album.title" />
+              <input type="text" id="title" v-model="this.record.title" />
             </div>
             <div class="property">
               <label for="title">Artist name</label>
               <input
                 type="text"
                 id="title"
-                v-model="this.record.album.artist.name"
+                v-model="this.record.artist"
               />
             </div>
             <div class="property">
@@ -125,7 +125,7 @@
               <input
                 type="number"
                 id="title"
-                v-model="this.record.album.releaseYear"
+                v-model="this.record.releaseYear"
               />
             </div>
             <div class="property">
@@ -143,12 +143,18 @@
           </div>
 
           <div class="track-list">
-            Tracklist
+            <div class="track-in-list" v-for="(track,index) in this.record.tracks" :key="track.id">
+              <span class="track-list-rank" @click="adjustRank(track)"><b>{{track.rank}}</b></span>
+              <input type="text" v-model="track.title" class="track-list-input"/>
+              <button class="btn btn-danger track-list-remove" @click="removeTrack(index)">-</button>
+            </div>
+            <button class="btn btn-primary" @click="addTrack">Add track</button>
           </div>
 
+          <button class="btn btn-primary paddingbutton">f</button>
           <div class="control-buttons">
-            <button class="btn btn-secondary">Cancel</button>
-            <button class="btn btn-primary">Save changes</button>
+            <button class="btn btn-secondary" @click="cancelEdit">Cancel</button>
+            <button class="btn btn-primary" @click="saveEdit">Save changes</button>
           </div>
         </div>
       </div>
@@ -182,13 +188,13 @@ export default {
       document.getElementById("foreground").classList.toggle("foreground-blur");
     },
     goToArtist() {
-      this.$router.push("/artist/" + this.record.album.artist.id);
+      this.$router.push("/artist/" + this.record.artist);
     },
     goToYoutubeSearch(song) {
       window
         .open(
           "https://youtube.com/results?search_query=" +
-            encodeURIComponent(this.record.album.artist.name) +
+            encodeURIComponent(this.record.artist) +
             "+" +
             encodeURIComponent(song),
           "_blank"
@@ -197,12 +203,64 @@ export default {
     },
     toggleEditModal() {
       if (!document.getElementById("edit-modal").classList.toggle("disabled")) {
-        this.originalRecord = this.record;
+        this.originalRecord = JSON.parse(JSON.stringify(this.record));
       }
     },
     toggleDeleteModal() {
       document.getElementById("delete-modal").classList.toggle("disabled");
     },
+    cancelEdit() {
+      this.record = this.originalRecord;
+      this.toggleEditModal();
+    },
+    saveEdit() {
+      console.log(JSON.stringify(this.record))
+      fetch("http://localhost:8080/record", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(this.record)
+      }).then(response => {
+        if (response.ok) {
+          this.toggleEditModal();
+        } else {
+          alert("Sorry, that did not work. Please try again")
+        }
+      }).catch(error => console.log(error));
+    },
+    addTrack() {
+      this.record.tracks.push({
+        title: "",
+        rank: this.record.tracks.length + 1
+      });
+    },
+    removeTrack(index) {
+      this.record.tracks.splice(index, 1);
+    },
+    orderTracks() {
+      this.record.tracks.sort((a,b) => a.rank - b.rank);
+    },
+    adjustRank(track) {
+      let answer = prompt("Enter new rank", track.rank);
+      if (answer) {
+        track.rank = parseInt(answer);
+        this.orderTracks();
+      }
+    },
+    deleteRecord() {
+      if (confirm("Do you really want to delete " + this.record.title + "?")) {
+        fetch("http://localhost:8080/record?id=" + this.record.id, {
+          method: "DELETE"
+        }).then(response => {
+          if (response.ok) {
+            this.$router.push("/records");
+          } else {
+            alert("Sorry, that did not work. Please try again");
+          }
+        })
+      }
+    }
   },
 };
 </script>
@@ -342,6 +400,9 @@ export default {
   padding: 1rem;
   position: relative;
   flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
 }
 .modalheader {
   background: #f0f0f0;
@@ -386,8 +447,11 @@ export default {
   border-color: rgba(0, 0, 0, 0.2);
   box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
   padding: 0.5rem;
-
+  gap: 0.5rem;
   margin-top: 1rem;
+  flex-grow: 1;
+
+  overflow-y: scroll;
 }
 .control-buttons {
   display: flex;
@@ -395,5 +459,22 @@ export default {
   bottom: 1rem;
   right: 1rem;
   gap: 1rem;
+}
+.track-in-list {
+  display: flex;
+  align-items: center;
+}
+.track-list-rank {
+  width: 2rem;
+}
+.track-list-input {
+  flex-grow: 1;
+}
+.track-list-remove {
+  margin-left: 1rem;
+}
+.paddingbutton {
+  visibility: hidden;
+  margin-top: 1rem;
 }
 </style>

@@ -13,11 +13,6 @@ import java.util.List;
 public class TrackController {
     final TrackRepository trackRepository;
 
-    @GetMapping
-    public List<Track> getByArtist(String artist) {
-        return trackRepository.findAllByAlbumArtistNameContainingIgnoreCase(artist);
-    }
-
     @GetMapping("all")
     public List<Track> getAllTracks() {
         return trackRepository.findAll();

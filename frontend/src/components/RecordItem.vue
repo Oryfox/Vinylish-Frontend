@@ -1,14 +1,14 @@
 <template>
   <div class="main" @click="navigateTo">
     <img
-      :src="'http://localhost:8080/album/image?id=' + this.record.album.id"
+      :src="'http://localhost:8080/record/image?id=' + this.record.id"
       alt="Cover"
     />
     <div class="text-area">
       <span class="title">
-        <b>{{ this.record.album.title }}</b>
+        <b>{{ this.record.title }}</b>
       </span>
-      <span class="artist">{{ this.record.album.artist.name }}</span>
+      <span class="artist">{{ this.record.artist }}</span>
     </div>
   </div>
 </template>
