@@ -73,11 +73,7 @@
         class="tracks"
         v-if="this.record.tracks && this.record.tracks.length > 0"
       >
-        <div
-          class="track"
-          v-for="item in this.record.tracks"
-          :key="item.rank"
-        >
+        <div class="track" v-for="item in this.record.tracks" :key="item.rank">
           <span class="track-rank">
             <b>{{ item.rank }}.</b>
           </span>
@@ -94,11 +90,8 @@
       <div class="modal-pane">
         <div class="modalheader">
           <span
-            >Editing
-            <span class="highlighted">{{ this.record.title }}</span> by
-            <span class="highlighted">{{
-              this.record.artist
-            }}</span></span
+            >Editing <span class="highlighted">{{ this.record.title }}</span> by
+            <span class="highlighted">{{ this.record.artist }}</span></span
           >
           <button
             class="btn-close close-modal-button"
@@ -110,13 +103,19 @@
           <div class="property-list">
             <div class="property">
               <label for="title">Album title</label>
-              <input type="text" id="title" v-model="this.record.title" />
+              <input
+                type="text"
+                id="title"
+                class="inputfield"
+                v-model="this.record.title"
+              />
             </div>
             <div class="property">
               <label for="title">Artist name</label>
               <input
                 type="text"
                 id="title"
+                class="inputfield"
                 v-model="this.record.artist"
               />
             </div>
@@ -125,36 +124,73 @@
               <input
                 type="number"
                 id="title"
+                class="inputfield"
                 v-model="this.record.releaseYear"
               />
             </div>
             <div class="property">
               <label for="title">Vinyl color</label>
-              <input type="text" id="title" v-model="this.record.color" />
+              <input
+                type="text"
+                class="inputfield"
+                id="title"
+                v-model="this.record.color"
+              />
             </div>
             <div class="property">
               <label for="title">Limited</label>
-              <input type="checkbox" id="title" v-model="this.record.limited" />
+              <input
+                type="checkbox"
+                class="checkobox"
+                id="title"
+                v-model="this.record.limited"
+              />
             </div>
             <div class="property">
               <label for="title">Bootleg</label>
-              <input type="checkbox" id="title" v-model="this.record.bootleg" />
+              <input
+                type="checkbox"
+                class="checkobox"
+                id="title"
+                v-model="this.record.bootleg"
+              />
             </div>
           </div>
 
           <div class="track-list">
-            <div class="track-in-list" v-for="(track,index) in this.record.tracks" :key="track.id">
-              <span class="track-list-rank" @click="adjustRank(track)"><b>{{track.rank}}</b></span>
-              <input type="text" v-model="track.title" class="track-list-input"/>
-              <button class="btn btn-danger track-list-remove" @click="removeTrack(index)">-</button>
+            <div
+              class="track-in-list"
+              v-for="(track, index) in this.record.tracks"
+              :key="track.id"
+            >
+              <span class="track-list-rank" @click="adjustRank(track)"
+                ><b>{{ track.rank }}</b></span
+              >
+              <input
+                type="text"
+                v-model="track.title"
+                class="track-list-input"
+              />
+              <button
+                class="btn btn-danger track-list-remove"
+                @click="removeTrack(index)"
+              >
+                -
+              </button>
             </div>
-            <button class="btn btn-primary" @click="addTrack">Add track</button>
+            <button class="btn btn-primary add-track-button" @click="addTrack">
+              Add Track
+            </button>
           </div>
 
           <button class="btn btn-primary paddingbutton">f</button>
           <div class="control-buttons">
-            <button class="btn btn-secondary" @click="cancelEdit">Cancel</button>
-            <button class="btn btn-primary" @click="saveEdit">Save changes</button>
+            <button class="btn btn-secondary" @click="cancelEdit">
+              Cancel
+            </button>
+            <button class="btn btn-primary" @click="saveEdit">
+              Save changes
+            </button>
           </div>
         </div>
       </div>
@@ -212,6 +248,8 @@ export default {
     cancelEdit() {
       this.record = this.originalRecord;
       this.toggleEditModal();
+      this.applyBlur();
+      this.applyBorder();
     },
     saveEdit() {
       console.log(JSON.stringify(this.record))
@@ -428,8 +466,9 @@ export default {
 .property {
   display: flex;
   align-items: center;
+  flex-direction: row;
 }
-.property input {
+.property .inputfield {
   margin-left: auto;
   flex-grow: 1;
 }
@@ -437,6 +476,9 @@ export default {
   width: 10rem;
   text-align: right;
   padding-right: 0.7rem;
+}
+.checkobox {
+  flex-grow: 0;
 }
 .track-list {
   display: flex;
@@ -476,5 +518,8 @@ export default {
 .paddingbutton {
   visibility: hidden;
   margin-top: 1rem;
+}
+.add-track-button {
+  margin-left: auto;
 }
 </style>
