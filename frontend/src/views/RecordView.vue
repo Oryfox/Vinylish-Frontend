@@ -166,7 +166,6 @@ export default {
   right: 0;
   bottom: 0;
   display: flex;
-  align-items: center;
   justify-content: center;
   z-index: 10;
   backdrop-filter: blur(5px);
