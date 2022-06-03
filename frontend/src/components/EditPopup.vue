@@ -2,11 +2,11 @@
   <div @click="cancelEdit">
     <div class="modal-pane" v-if="record" v-on:click.stop>
       <div class="modalheader">
-        <span
-          >{{ action }}
+        <span v-if="record.title !== null && record.artist !== null && record.title !== '' && record.artist !== ''">{{ action }}
           <span class="highlighted">{{ this.record.title }}</span> by
-          <span class="highlighted">{{ this.record.artist }}</span></span
-        >
+          <span class="highlighted">{{ this.record.artist }}</span>
+        </span>
+        <span v-else>Creating new record</span>
         <button class="btn-close close-modal-button" @click="cancelEdit" />
       </div>
 

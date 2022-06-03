@@ -4,11 +4,15 @@ import {RouterLink} from "vue-router";</script>
 <template>
   <nav>
     <img src="/icon.png" alt="Logo" />
-    <RouterLink to="/" class="rl">Home</RouterLink>
-    <RouterLink to="/about" class="rl">About</RouterLink>
+    <!--<RouterLink to="/" class="rl">Home</RouterLink>
+    <RouterLink to="/about" class="rl">About</RouterLink>-->
+    <div @click="this.$router.go(-1)" class="back-button" v-if="this.$route.name !== 'records' && this.$route.name !== 'artists'"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+</svg></div>
     <RouterLink to="/records" class="rl">Records</RouterLink>
+    <RouterLink to="/artists" class="rl">Artists</RouterLink>
 
-    <div class="addButton">
+    <div class="addButton" @click="this.$refs.current.createNew()" v-if="this.$route.name === 'records'">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="22"
@@ -28,7 +32,7 @@ import {RouterLink} from "vue-router";</script>
   </nav>
   <router-view v-slot="{ Component }">
     <transition name="fade" mode="out-in">
-      <component :is="Component"> </component>
+      <component :is="Component" ref="current"> </component>
     </transition>
   </router-view>
 </template>
@@ -61,9 +65,31 @@ nav {
   text-decoration: none;
   border-radius: 1rem;
   color: #5f00a2;
-  background: white;
   margin-right: 2rem;
   padding: 0.5rem 1rem;
+  transition-duration: .3s;
+}
+.rl:hover {
+  transition-duration: .3s;
+  background: white;
+}
+
+.back-button {
+  text-decoration: none;
+  border-radius: 1rem;
+  color: #5f00a2;
+  margin-right: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition-duration: .3s;
+  width: 2.5rem;
+  height: 2.5rem;
+  cursor: pointer;
+}
+.back-button:hover {
+  transition-duration: .3s;
+  background: white;
 }
 
 img {

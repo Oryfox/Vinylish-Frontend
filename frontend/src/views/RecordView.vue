@@ -30,22 +30,33 @@
         />
       </svg>
     </div>
+
+     <EditPopup
+      class="new-modal disabled"
+      id="new-modal"
+      action="Creating"
+      :record="this.newRecord"
+      @save="saveNew"
+      @cancel="cancelNew"
+    />
   </div>
   <div v-else>{{ error }}</div>
 </template>
 
 <script>
 import RecordItem from "../components/RecordItem.vue";
-
+import EditPopup from "../components/EditPopup.vue";
 export default {
   components: {
     RecordItem,
+    EditPopup
   },
   data() {
     return {
       records: [],
       sortby: "unsorted",
-      error: null
+      error: null,
+      newRecord: null
     };
   },
   created() {
@@ -78,6 +89,48 @@ export default {
         this.getRecords();
       }
     },
+    toggleNewRecordModal() {
+      document.getElementById("new-modal").classList.toggle("disabled")
+    },
+    createNew() {
+      this.newRecord = {
+        "artist": null,
+        "title": null,
+        "tracks": [
+          {
+            "rank": 1,
+            "title": null
+          }
+        ],
+        "releaseYear": null,
+        "imageType": "NONE",
+        "color": null,
+        "limited": false,
+        "bootleg": false
+      }
+      this.toggleNewRecordModal();
+    },
+    saveNew() {
+      fetch("http://localhost:8080/record", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(this.newRecord)
+      }).then(response => {
+        if (response.ok) {
+          this.toggleNewRecordModal();
+          this.newRecord = null;
+          response.json().then(r => this.records.push(r));
+        } else {
+          alert("Sorry that didn't work");
+        }
+      })
+    },
+    cancelNew() {
+      this.toggleNewRecordModal();
+      this.newRecord = null;
+    }
   },
 };
 </script>
@@ -105,5 +158,21 @@ export default {
   align-items: center;
   margin-top: 20vh;
   color: rgba(112, 88, 64, 0.338);
+}
+.new-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+.disabled {
+  display: none;
 }
 </style>
