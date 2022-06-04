@@ -4,8 +4,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.io.FileNotFoundException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -21,16 +24,20 @@ public class LastFM {
 
     @SneakyThrows
     public AlbumInfo getAlbumInfo(String artist, String album) {
-        return new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                .readValue(new URL(
-                        String.format("%s?api_key=%s&artist=%s&album=%s&format=json&method=album.getInfo",
-                                baseUrl,
-                                key,
-                                enc(artist),
-                                enc(album))),
-                        AlbumInfo.AlbumInfoResponse.class)
-                .getAlbum();
+        try {
+            return new ObjectMapper()
+                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                    .readValue(new URL(
+                                    String.format("%s?api_key=%s&artist=%s&album=%s&format=json&method=album.getInfo",
+                                            baseUrl,
+                                            key,
+                                            enc(artist),
+                                            enc(album))),
+                            AlbumInfo.AlbumInfoResponse.class)
+                    .getAlbum();
+        } catch (FileNotFoundException ignored) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
     }
 
     @SneakyThrows

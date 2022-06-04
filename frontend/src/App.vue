@@ -12,7 +12,7 @@ import {RouterLink} from "vue-router";</script>
     <RouterLink to="/records" class="rl">Records</RouterLink>
     <RouterLink to="/artists" class="rl">Artists</RouterLink>
 
-    <div class="addButton" @click="this.$refs.current.createNew()" v-if="this.$route.name === 'records'">
+    <div class="addButton" @click="this.$refs.current.toggleNewRecordModal()" v-if="this.$route.name === 'records'">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="22"

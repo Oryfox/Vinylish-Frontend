@@ -2,6 +2,7 @@ package de.oryfox.vinylish.record;
 
 import de.oryfox.vinylish.ImageType;
 import de.oryfox.vinylish.lastfm.LastFM;
+import de.oryfox.vinylish.track.Track;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.core.io.FileSystemResource;
@@ -33,6 +34,20 @@ public class RecordController {
     @PostMapping
     public Record addRecord(@RequestBody Record record) {
         return recordRepository.save(record);
+    }
+
+    @GetMapping("auto")
+    public Record retrieveRecordViaLastFM(@RequestParam String artist, @RequestParam String title) {
+        var aInfo = lastFM.getAlbumInfo(artist,title);
+        var record = new Record();
+        record.setArtist(aInfo.getArtist());
+        record.setTitle(aInfo.getName());
+        record.setColor("Black");
+        record.setBootleg(false);
+        record.setLimited(false);
+        record.setReleaseYear(2000);
+        record.setTracks(aInfo.getTracks().stream().map(track -> new Track(track.getName(), track.getRank())).toList());
+        return record;
     }
 
     @GetMapping

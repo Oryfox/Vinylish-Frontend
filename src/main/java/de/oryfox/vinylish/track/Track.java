@@ -1,8 +1,6 @@
 package de.oryfox.vinylish.track;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.oryfox.vinylish.record.Record;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +17,13 @@ import javax.persistence.*;
 public class Track {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long id;
     private String title;
     private Integer rank;
+
+    public Track(String title, Integer rank) {
+        this.title = title;
+        this.rank = rank;
+    }
 }

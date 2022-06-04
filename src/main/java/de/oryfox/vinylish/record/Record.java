@@ -1,5 +1,6 @@
 package de.oryfox.vinylish.record;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import de.oryfox.vinylish.ImageType;
 import de.oryfox.vinylish.track.Track;
 import lombok.Getter;
@@ -17,6 +18,7 @@ import java.util.List;
 public class Record {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long id;
     private String artist;
     private String title;

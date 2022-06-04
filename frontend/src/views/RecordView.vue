@@ -31,13 +31,21 @@
       </svg>
     </div>
 
-     <EditPopup
+    <EditPopup
       class="new-modal disabled"
       id="new-modal"
       action="Creating"
       :record="this.newRecord"
       @save="saveNew"
       @cancel="cancelNew"
+    />
+
+    <CreationSelect
+      class="disabled"
+      id="creation-select"
+      @cancel="toggleNewRecordModal"
+      @success="success"
+      :record="this.newRecord"
     />
   </div>
   <div v-else>{{ error }}</div>
@@ -46,17 +54,19 @@
 <script>
 import RecordItem from "../components/RecordItem.vue";
 import EditPopup from "../components/EditPopup.vue";
+import CreationSelect from "../components/CreationSelect.vue";
 export default {
   components: {
     RecordItem,
-    EditPopup
+    EditPopup,
+    CreationSelect,
   },
   data() {
     return {
       records: [],
       sortby: "unsorted",
       error: null,
-      newRecord: null
+      newRecord: null,
     };
   },
   created() {
@@ -72,14 +82,12 @@ export default {
         .catch((error) => {
           console.log(error);
           this.error = "Could not establish connection to server";
-    });
+        });
     },
     sort() {
       if (this.sortby === "artist") {
         this.records.sort(
-          (a, b) =>
-            a.artist.toLowerCase() >
-            b.artist.toLowerCase()
+          (a, b) => a.artist.toLowerCase() > b.artist.toLowerCase()
         );
       } else if (this.sortby === "title") {
         this.records.sort(
@@ -90,47 +98,54 @@ export default {
       }
     },
     toggleNewRecordModal() {
-      document.getElementById("new-modal").classList.toggle("disabled")
-    },
-    createNew() {
-      this.newRecord = {
-        "artist": null,
-        "title": null,
-        "tracks": [
-          {
-            "rank": 1,
-            "title": null
-          }
-        ],
-        "releaseYear": null,
-        "imageType": "NONE",
-        "color": null,
-        "limited": false,
-        "bootleg": false
+      if (
+        !document.getElementById("creation-select").classList.toggle("disabled")
+      ) {
+        this.newRecord = {
+          artist: null,
+          title: null,
+          tracks: [
+            {
+              rank: 1,
+              title: null,
+            },
+          ],
+          releaseYear: null,
+          imageType: "NONE",
+          color: null,
+          limited: false,
+          bootleg: false,
+        };
       }
-      this.toggleNewRecordModal();
+    },
+    toggleEditRecordModal() {
+      document.getElementById("new-modal").classList.toggle("disabled");
     },
     saveNew() {
       fetch("http://localhost:8080/record", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(this.newRecord)
-      }).then(response => {
+        body: JSON.stringify(this.newRecord),
+      }).then((response) => {
         if (response.ok) {
-          this.toggleNewRecordModal();
           this.newRecord = null;
-          response.json().then(r => this.records.push(r));
+          this.toggleEditRecordModal();
+          response.json().then((r) => this.records.push(r));
         } else {
           alert("Sorry that didn't work");
         }
-      })
+      });
     },
     cancelNew() {
-      this.toggleNewRecordModal();
+      this.toggleEditRecordModal();
       this.newRecord = null;
-    }
+    },
+    success() {
+      this.toggleNewRecordModal();
+      this.toggleEditRecordModal();
+    },
   },
 };
 </script>
