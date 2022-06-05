@@ -20,6 +20,7 @@ public class Track {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long id;
     private String title;
+    @Column(name = "track_rank")
     private Integer rank;
 
     public Track(String title, Integer rank) {
