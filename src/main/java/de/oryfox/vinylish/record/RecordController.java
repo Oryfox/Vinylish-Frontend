@@ -46,7 +46,7 @@ public class RecordController {
         record.setBootleg(false);
         record.setLimited(false);
         record.setReleaseYear(2000);
-        record.setTracks(aInfo.getTracks().stream().map(track -> new Track(track.getName(), track.getRank())).toList());
+        record.setTracks(aInfo.getTracks() != null ? aInfo.getTracks().stream().map(track -> new Track(track.getName(), track.getRank())).toList() : null);
         return record;
     }
 
