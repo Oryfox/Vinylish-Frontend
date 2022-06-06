@@ -1,8 +1,10 @@
 package de.oryfox.vinylish.record;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.oryfox.vinylish.ImageType;
 import de.oryfox.vinylish.track.Track;
+import de.oryfox.vinylish.user.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,4 +31,11 @@ public class Record {
     private String color;
     private boolean limited;
     private boolean bootleg;
+    @ManyToOne
+    private User creator;
+
+    @JsonGetter("creator")
+    public Long getCreator() {
+        return creator.getId();
+    }
 }

@@ -3,8 +3,11 @@ package de.oryfox.vinylish.record;
 import de.oryfox.vinylish.ImageType;
 import de.oryfox.vinylish.lastfm.LastFM;
 import de.oryfox.vinylish.track.Track;
+import de.oryfox.vinylish.user.UserController;
+import de.oryfox.vinylish.user.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
@@ -29,15 +32,19 @@ import java.util.Objects;
 public class RecordController {
 
     final RecordRepository recordRepository;
+    final UserRepository userRepository;
+    final UserController userController;
     final LastFM lastFM;
 
     @PostMapping
-    public Record addRecord(@RequestBody Record record) {
+    public Record addRecord(@RequestHeader String token, @RequestBody Record record) {
+        record.setCreator(userController.check(token));
         return recordRepository.save(record);
     }
 
     @GetMapping("auto")
-    public Record retrieveRecordViaLastFM(@RequestParam String artist, @RequestParam String title) {
+    public Record retrieveRecordViaLastFM(@RequestHeader String token, @RequestParam String artist, @RequestParam String title) {
+        userController.check(token);
         var aInfo = lastFM.getAlbumInfo(artist,title);
         var record = new Record();
         record.setArtist(aInfo.getArtist());
@@ -51,19 +58,21 @@ public class RecordController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> listRecord(@RequestParam(required = false) Long id) {
+    public ResponseEntity<Object> listRecord(@RequestHeader String token, @RequestParam(required = false) Long id) {
+        var user = userController.check(token);
         if (id != null) {
-            var opt = recordRepository.findById(id);
+            var opt = recordRepository.findById(id, user);
             if (opt.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
             return ResponseEntity.ok(opt.get());
         } else {
-            return ResponseEntity.ok(recordRepository.findAll());
+            return ResponseEntity.ok(recordRepository.findAllByCreator(user));
         }
     }
 
     @DeleteMapping
-    public void deleteRecord(@RequestParam Long id) {
-        var opt = recordRepository.findById(id);
+    public void deleteRecord(@RequestHeader String token, @RequestParam Long id) {
+        var user = userController.check(token);
+        var opt = recordRepository.findById(id, user);
         if (opt.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         try {
             Files.deleteIfExists(new File("images/" + opt.get().getId()).toPath());
@@ -79,9 +88,11 @@ public class RecordController {
     }
 
     @PutMapping
-    public Record editRecord(@RequestBody Record record) {
-        var opt = recordRepository.findById(record.getId());
+    public Record editRecord(@RequestHeader String token, @RequestBody Record record) {
+        var user = userController.check(token);
+        var opt = recordRepository.findById(record.getId(), user);
         if (opt.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        record.setCreator(user);
         return recordRepository.save(record);
     }
 
@@ -119,6 +130,7 @@ public class RecordController {
     }
 
     @PostMapping("image")
+    @ConditionalOnProperty("vinylish.enable-custom-images")
     public void addImage(@RequestParam("id") Long id, @RequestPart("image") MultipartFile file) {
         var recordOpt = recordRepository.findById(id);
         if (recordOpt.isEmpty()) {
@@ -135,6 +147,7 @@ public class RecordController {
     }
 
     @PutMapping("image")
+    @ConditionalOnProperty("vinylish.enable-custom-images")
     public void setImage(@RequestParam("id") Long id, @RequestPart("image") MultipartFile file) {
         var recordOpt = recordRepository.findById(id);
         if (recordOpt.isEmpty()) {
@@ -152,6 +165,7 @@ public class RecordController {
 
     @SneakyThrows
     @DeleteMapping("image")
+    @ConditionalOnProperty("vinylish.enable-custom-images")
     public void removeImage(@RequestParam("id") Long id) {
         var recordOpt = recordRepository.findById(id);
         if (recordOpt.isEmpty()) {

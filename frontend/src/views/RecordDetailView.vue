@@ -105,17 +105,17 @@
 </template>
 
 <script>
-import EditPopup from "../components/EditPopup.vue"
-import DeletePopup from "../components/DeletePopup.vue"
+import EditPopup from "../components/EditPopup.vue";
+import DeletePopup from "../components/DeletePopup.vue";
 export default {
   components: {
     EditPopup,
-    DeletePopup
+    DeletePopup,
   },
   data() {
     return {
       record: null,
-      originalRecord: null
+      originalRecord: null,
     };
   },
   created() {
@@ -163,32 +163,34 @@ export default {
       this.applyBorder();
     },
     saveEdit() {
-      console.log(JSON.stringify(this.record))
+      console.log(JSON.stringify(this.record));
       fetch("http://localhost:8080/record", {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(this.record)
-      }).then(response => {
-        if (response.ok) {
-          this.toggleEditModal();
-        } else {
-          alert("Sorry, that did not work. Please try again")
-        }
-      }).catch(error => console.log(error));
+        body: JSON.stringify(this.record),
+      })
+        .then((response) => {
+          if (response.ok) {
+            this.toggleEditModal();
+          } else {
+            alert("Sorry, that did not work. Please try again");
+          }
+        })
+        .catch((error) => console.log(error));
     },
     deleteRecord() {
       fetch("http://localhost:8080/record?id=" + this.record.id, {
-        method: "DELETE"
-      }).then(response => {
+        method: "DELETE",
+      }).then((response) => {
         if (response.ok) {
           this.$router.push("/records");
         } else {
           alert("Sorry, that did not work. Please try again");
         }
-      })
-    }
+      });
+    },
   },
 };
 </script>
@@ -225,6 +227,7 @@ export default {
 .underline:hover::after,
 .underline:focus::after {
   transform: translate3d(0, 0, 0);
+  opacity: 1;
 }
 .underline {
   transition-duration: 0.5s;
@@ -244,7 +247,6 @@ export default {
   background-color: darkslategray;
   opacity: 0;
   transition: opacity 300ms, transform 300ms;
-  opacity: 1;
   transform: translate3d(-100%, 0, 0);
 }
 

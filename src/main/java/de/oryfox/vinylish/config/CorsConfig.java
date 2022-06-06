@@ -1,4 +1,4 @@
-package de.oryfox.vinylish;
+package de.oryfox.vinylish.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
