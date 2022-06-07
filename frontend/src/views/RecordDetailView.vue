@@ -251,6 +251,7 @@ export default {
   position: relative;
   width: 85%;
   transition-duration: 2s;
+  border: solid thin rgba(0, 0, 0, 0.2);
 }
 .foreground-blur {
   border-radius: 1rem;

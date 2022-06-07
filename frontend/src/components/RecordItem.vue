@@ -38,7 +38,6 @@ export default {
   cursor: pointer;
 }
 .main:hover {
-  box-shadow: 1px 1px 1rem 1px rgba(0, 0, 0, 0.2);
   transition-duration: 0.5s;
   height: 15rem;
   font-size: x-large;
