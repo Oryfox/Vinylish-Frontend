@@ -55,6 +55,7 @@
 import RecordItem from "../components/RecordItem.vue";
 import EditPopup from "../components/EditPopup.vue";
 import CreationSelect from "../components/CreationSelect.vue";
+import ES from "../plugins/eventService";
 export default {
   components: {
     RecordItem,
@@ -74,7 +75,7 @@ export default {
   },
   methods: {
     getRecords() {
-      fetch("http://localhost:8080/record")
+      ES.getRecords()
         .then((response) => response.json())
         .then((data) => {
           this.records = data;
@@ -122,13 +123,7 @@ export default {
       document.getElementById("new-modal").classList.toggle("disabled");
     },
     saveNew() {
-      fetch("http://localhost:8080/record", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(this.newRecord),
-      }).then((response) => {
+      ES.postRecord(this.newRecord).then((response) => {
         if (response.ok) {
           this.newRecord = null;
           this.toggleEditRecordModal();

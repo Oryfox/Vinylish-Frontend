@@ -44,6 +44,7 @@
 </template>
 
 <script>
+import ES from "../plugins/eventService";
 export default {
   props: {
     record: null,
@@ -69,12 +70,7 @@ export default {
       this.$emit("success");
     },
     submit() {
-      fetch(
-        "http://localhost:8080/record/auto?artist=" +
-          encodeURI(this.artist) +
-          "&title=" +
-          encodeURI(this.title)
-      ).then((res) => {
+      ES.getAutoRecord(this.artist, this.title).then((res) => {
         if (res.ok) {
           res.json().then((newrec) => {
             this.record.artist = newrec.artist;

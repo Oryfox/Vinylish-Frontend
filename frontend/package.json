@@ -7,8 +7,11 @@
     "preview": "vite preview --port 5050"
   },
   "dependencies": {
+    "js-cookie": "^3.0.1",
+    "tiny-emitter": "^2.1.0",
     "v-lazy-image": "^2.1.1",
     "vue": "^3.2.33",
+    "vue-cookies": "^1.8.1",
     "vue-router": "^4.0.14"
   },
   "devDependencies": {

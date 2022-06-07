@@ -21,7 +21,7 @@ public class UserController {
         if (opt.isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
-        if (user.getEmail() != null && !user.getEmail().equals("") && user.getPassword() != null && !user.getPassword().equals("")) {
+        if (user.getEmail() != null && !user.getEmail().equals("") && user.getPassword() != null && !user.getPassword().equals("") && user.getEmail().matches("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")) {
             user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
             userRepository.save(user);
         } else {

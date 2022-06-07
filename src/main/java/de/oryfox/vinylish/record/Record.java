@@ -35,7 +35,8 @@ public class Record {
     private User creator;
 
     @JsonGetter("creator")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public Long getCreator() {
-        return creator.getId();
+        return creator != null ? creator.getId() : null;
     }
 }

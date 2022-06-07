@@ -24,3 +24,4 @@ services:
       - SPRING_DATASOURCE_PASSWORD=root
       - SPRING_DATASOURCE_DRIVER-CLASS-NAME=com.mysql.cj.jdbc.Driver
       - SPRING_JPA_HIBERNATE_DDL-AUTO=update
+      - CORS_FIELD=vinyl.oryfox.de

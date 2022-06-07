@@ -1,9 +1,6 @@
 <template>
   <div class="main" @click="navigateTo">
-    <img
-      :src="'http://localhost:8080/record/image?id=' + this.record.id"
-      alt="Cover"
-    />
+    <img :src="baseUrl + 'record/image?id=' + this.record.id" alt="Cover" />
     <div class="text-area">
       <span class="title">
         <b>{{ this.record.title }}</b>
@@ -17,6 +14,11 @@
 export default {
   props: {
     record: { required: true },
+  },
+  data() {
+    return {
+      baseUrl: import.meta.env.VITE_HOST,
+    };
   },
   methods: {
     navigateTo() {

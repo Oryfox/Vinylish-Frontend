@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory} from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -35,6 +35,16 @@ const router = createRouter({
       path: "/artist/:name",
       name: "artistdetail",
       component: () => import("../views/ArtistDetailView.vue")
+    },
+    {
+      path: "/login",
+      name: "login",
+      component: () => import("../views/LoginView.vue")
+    },
+    {
+      path: "/logout",
+      name: "logout",
+      component: () => import("../views/LogoutView.vue")
     }
   ]
 })

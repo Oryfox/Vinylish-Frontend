@@ -4,7 +4,8 @@
       <div class="image">
         <img
           :src="
-            'http://localhost:8080/record/image?id=' +
+            baseUrl +
+            'record/image?id=' +
             this.record.id +
             '&time=' +
             Date.now()
@@ -16,7 +17,8 @@
         />
         <img
           :src="
-            'http://localhost:8080/record/image?id=' +
+            baseUrl +
+            'record/image?id=' +
             this.record.id +
             '&time=' +
             Date.now()
@@ -107,6 +109,7 @@
 <script>
 import EditPopup from "../components/EditPopup.vue";
 import DeletePopup from "../components/DeletePopup.vue";
+import ES from "../plugins/eventService";
 export default {
   components: {
     EditPopup,
@@ -114,6 +117,7 @@ export default {
   },
   data() {
     return {
+      baseUrl: import.meta.env.VITE_HOST,
       record: null,
       originalRecord: null,
     };
@@ -123,7 +127,7 @@ export default {
   },
   methods: {
     getRecord() {
-      fetch("http://localhost:8080/record?id=" + this.$route.params.id)
+      ES.getRecord(this.$route.params.id)
         .then((res) => res.json())
         .then((data) => (this.record = data))
         .catch((error) => console.log(error));
@@ -163,14 +167,8 @@ export default {
       this.applyBorder();
     },
     saveEdit() {
-      console.log(JSON.stringify(this.record));
-      fetch("http://localhost:8080/record", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(this.record),
-      })
+      this.record.creator = null;
+      ES.putRecord(this.record)
         .then((response) => {
           if (response.ok) {
             this.toggleEditModal();
@@ -181,9 +179,7 @@ export default {
         .catch((error) => console.log(error));
     },
     deleteRecord() {
-      fetch("http://localhost:8080/record?id=" + this.record.id, {
-        method: "DELETE",
-      }).then((response) => {
+      ES.deleteRecord(this.record.id).then((response) => {
         if (response.ok) {
           this.$router.push("/records");
         } else {
