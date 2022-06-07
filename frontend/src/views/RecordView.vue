@@ -56,6 +56,7 @@ import RecordItem from "../components/RecordItem.vue";
 import EditPopup from "../components/EditPopup.vue";
 import CreationSelect from "../components/CreationSelect.vue";
 import ES from "../plugins/eventService";
+import emitter from "tiny-emitter/instance";
 export default {
   components: {
     RecordItem,
@@ -71,6 +72,7 @@ export default {
     };
   },
   created() {
+    emitter.on("createNew", () => this.toggleNewRecordModal());
     this.getRecords();
   },
   methods: {
