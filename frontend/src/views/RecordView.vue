@@ -41,11 +41,11 @@
     />
 
     <CreationSelect
-      class="disabled"
       id="creation-select"
       @cancel="toggleNewRecordModal"
       @success="success"
       :record="this.newRecord"
+      v-if="selectVisible"
     />
   </div>
   <div v-else>{{ error }}</div>
@@ -69,10 +69,13 @@ export default {
       sortby: "unsorted",
       error: null,
       newRecord: null,
+      selectVisible: false,
     };
   },
   created() {
-    emitter.on("createNew", () => this.toggleNewRecordModal());
+    emitter.on("createNew", () => {
+      this.toggleNewRecordModal();
+    });
     this.getRecords();
   },
   methods: {
@@ -101,9 +104,8 @@ export default {
       }
     },
     toggleNewRecordModal() {
-      if (
-        !document.getElementById("creation-select").classList.toggle("disabled")
-      ) {
+      this.selectVisible = !this.selectVisible;
+      if (this.selectVisible) {
         this.newRecord = {
           artist: null,
           title: null,
