@@ -121,7 +121,13 @@ public class RecordController {
             }
             case CUSTOM -> {
                 var imgFile = new FileSystemResource("images/" + id);
-                return ResponseEntity.ok(new InputStreamResource(imgFile.getInputStream()));
+                try {
+                    return ResponseEntity.ok(new InputStreamResource(imgFile.getInputStream()));
+                } catch (FileNotFoundException ignored) {
+                    opt.get().setImageType(ImageType.NONE);
+                    recordRepository.save(opt.get());
+                    return getImage(id);
+                }
             }
             default -> {
                 return ResponseEntity.ok(new InputStreamResource(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("icon.png"))));
