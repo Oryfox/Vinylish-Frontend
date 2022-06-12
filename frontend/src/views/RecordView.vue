@@ -7,11 +7,30 @@
         <option value="artist">Artist</option>
         <option value="title">Title</option>
       </select>
+
+      <div class="toggleGrid">
+        <b>List view</b>
+        <label class="switch">
+          <input type="checkbox" v-model="grid" @change="gridsettings" />
+          <span class="slider round"></span>
+        </label>
+        <b>Grid view</b>
+      </div>
     </div>
 
-    <div class="list" v-if="records.length > 0">
-      <RecordItem v-for="record in records" :key="record.id" :record="record" />
+    <div v-if="records.length > 0">
+      <div class="grid" v-if="grid">
+        <GridItem v-for="record in records" :key="record.id" :record="record" />
+      </div>
+      <div class="list" v-else>
+        <RecordItem
+          v-for="record in records"
+          :key="record.id"
+          :record="record"
+        />
+      </div>
     </div>
+
     <div class="record-list-empty" v-else>
       <span style="margin-right: 0.4rem">Such emptiness</span>
       <svg
@@ -57,11 +76,13 @@ import EditPopup from "../components/EditPopup.vue";
 import CreationSelect from "../components/CreationSelect.vue";
 import ES from "../plugins/eventService";
 import emitter from "tiny-emitter/instance";
+import GridItem from "../components/GridItem.vue";
 export default {
   components: {
     RecordItem,
     EditPopup,
     CreationSelect,
+    GridItem,
   },
   data() {
     return {
@@ -70,6 +91,7 @@ export default {
       error: null,
       newRecord: null,
       selectVisible: false,
+      grid: false,
     };
   },
   created() {
@@ -77,6 +99,7 @@ export default {
       this.toggleNewRecordModal();
     });
     this.getRecords();
+    this.grid = this.$cookies.get("grid") === "Yes";
   },
   methods: {
     getRecords() {
@@ -145,6 +168,9 @@ export default {
       this.toggleNewRecordModal();
       this.toggleEditRecordModal();
     },
+    gridsettings() {
+      this.$cookies.set("grid", this.grid === false ? "No" : "Yes");
+    },
   },
 };
 </script>
@@ -158,7 +184,15 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  padding: 0 1rem;
+  padding: 0 1rem 1rem 1rem;
+}
+.grid {
+  display: inline-flex;
+  flex-wrap: wrap;
+  padding: 0 1rem 1rem 1rem;
+  gap: 1.5rem;
+  flex: 0 1;
+  justify-content: center;
 }
 .orderholder {
   padding: 1em;
@@ -187,5 +221,55 @@ export default {
 }
 .disabled {
   display: none;
+}
+.toggleGrid {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgb(169, 132, 172);
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+.slider.round {
+  border-radius: 34px;
+}
+.slider.round:before {
+  border-radius: 50%;
 }
 </style>
