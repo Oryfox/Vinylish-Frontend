@@ -8,6 +8,28 @@
         <option value="title">Title</option>
       </select>
 
+      <div class="searchField">
+        <label for="searchField"
+          ><svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-search"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"
+            /></svg
+        ></label>
+        <input
+          id="searchField"
+          type="text"
+          v-model="search"
+          placeholder="Search..."
+        />
+      </div>
+
       <div class="toggleGrid">
         <b>List view</b>
         <label class="switch">
@@ -20,11 +42,15 @@
 
     <div v-if="records.length > 0">
       <div class="grid" v-if="grid">
-        <GridItem v-for="record in records" :key="record.id" :record="record" />
+        <GridItem
+          v-for="record in searchRecords"
+          :key="record.id"
+          :record="record"
+        />
       </div>
       <div class="list" v-else>
         <RecordItem
-          v-for="record in records"
+          v-for="record in searchRecords"
           :key="record.id"
           :record="record"
         />
@@ -92,6 +118,7 @@ export default {
       newRecord: null,
       selectVisible: false,
       grid: false,
+      search: "",
     };
   },
   created() {
@@ -100,6 +127,15 @@ export default {
     });
     this.getRecords();
     this.grid = this.$cookies.get("grid") === "Yes";
+  },
+  computed: {
+    searchRecords() {
+      return this.records.filter(
+        (record) =>
+          record.title.toLowerCase().includes(this.search.toLowerCase()) ||
+          record.artist.toLowerCase().includes(this.search.toLowerCase())
+      );
+    },
   },
   methods: {
     getRecords() {
@@ -222,8 +258,16 @@ export default {
 .disabled {
   display: none;
 }
-.toggleGrid {
+.searchField {
   margin-left: auto;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.searchField label {
+  color: gray;
+}
+.toggleGrid {
   display: flex;
   align-items: center;
   gap: 8px;
