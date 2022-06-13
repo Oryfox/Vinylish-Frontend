@@ -15,6 +15,8 @@
               id="title"
               class="inputfield"
               v-model="this.artist"
+              @keyup.enter="submit"
+              @keydown="resetMessage"
             />
           </div>
           <div class="property">
@@ -24,8 +26,11 @@
               id="title"
               class="inputfield"
               v-model="this.title"
+              @keyup.enter="submit"
+              @keydown="resetMessage"
             />
           </div>
+          <span class="message" v-if="message">{{ message }}</span>
 
           <div class="confirm-group">
             <button class="btn btn-secondary" @click="automatic">Cancel</button>
@@ -52,15 +57,16 @@ export default {
   data() {
     return {
       getInput: false,
-      artist: null,
-      title: null,
+      artist: "",
+      title: "",
+      message: null,
     };
   },
   methods: {
     cancel() {
       this.getInput = false;
-      this.artist = null;
-      this.title = null;
+      this.artist = "";
+      this.title = "";
       this.$emit("cancel");
     },
     automatic() {
@@ -70,31 +76,38 @@ export default {
       this.$emit("success");
     },
     submit() {
-      ES.getAutoRecord(this.artist, this.title).then((res) => {
-        if (res.ok) {
-          res.json().then((newrec) => {
-            this.record.artist = newrec.artist;
-            this.record.title = newrec.title;
-            this.record.color = newrec.color;
-            this.record.bootleg = newrec.bootleg;
-            this.record.limited = newrec.limited;
-            this.record.releaseYear = newrec.releaseYear;
-            this.record.tracks = newrec.tracks;
-            this.record.imageType = newrec.imageType;
+      if (this.artist !== "" && this.title !== "") {
+        ES.getAutoRecord(this.artist, this.title).then((res) => {
+          if (res.ok) {
+            res.json().then((newrec) => {
+              this.record.artist = newrec.artist;
+              this.record.title = newrec.title;
+              this.record.color = newrec.color;
+              this.record.bootleg = newrec.bootleg;
+              this.record.limited = newrec.limited;
+              this.record.releaseYear = newrec.releaseYear;
+              this.record.tracks = newrec.tracks;
+              this.record.imageType = newrec.imageType;
 
-            this.getInput = false;
-            this.artist = null;
-            this.title = null;
-            this.$emit("success");
-          });
-        } else {
-          if (res.status === 404) {
-            alert("No album could be found");
+              this.getInput = false;
+              this.artist = "";
+              this.title = "";
+              this.$emit("success");
+            });
           } else {
-            alert("Whoops.. Something went wrong");
+            if (res.status === 404) {
+              alert("No album could be found");
+            } else {
+              alert("Whoops.. Something went wrong");
+            }
           }
-        }
-      });
+        });
+      } else {
+        this.message = "Artist and Title must contain a value";
+      }
+    },
+    resetMessage() {
+      this.message = null;
     },
   },
 };
@@ -171,5 +184,9 @@ export default {
   margin-left: auto;
   display: flex;
   gap: 0.5rem;
+}
+.message {
+  color: red;
+  font-size: 0.8rem;
 }
 </style>
