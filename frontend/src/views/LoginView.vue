@@ -1,8 +1,20 @@
 <template>
   <div style="display: flex; justify-content: center">
     <div class="base">
-      <input type="text" v-model="username" placeholder="Email" />
-      <input type="password" v-model="password" placeholder="Password" />
+      <input
+        type="text"
+        v-model="username"
+        placeholder="Email"
+        @keyup.enter="login"
+        @keydown="resetMessage"
+      />
+      <input
+        type="password"
+        v-model="password"
+        placeholder="Password"
+        @keyup.enter="login"
+        @keydown="resetMessage"
+      />
       <span class="message">{{ message }}</span>
 
       <div class="btn-group">
@@ -21,49 +33,60 @@ import emitter from "tiny-emitter/instance";
 export default {
   data() {
     return {
-      username: null,
-      password: null,
+      username: "",
+      password: "",
       message: null,
     };
   },
   methods: {
     login() {
       this.message = null;
-      ES.login({
-        email: this.username,
-        password: this.password,
-      }).then((res) => {
-        if (res.ok) {
-          res.text().then((token) => {
-            this.$cookies.set("token", token);
-            emitter.emit("tokenSet", token);
-            this.username = null;
-            this.password = null;
-            this.$router.push("/");
-          });
-        } else {
-          if (res.status === 401) {
-            this.message = "Either email or password is wrong";
+      if (this.username !== "" && this.password !== "") {
+        ES.login({
+          email: this.username,
+          password: this.password,
+        }).then((res) => {
+          if (res.ok) {
+            res.text().then((token) => {
+              this.$cookies.set("token", token);
+              emitter.emit("tokenSet", token);
+              this.username = "";
+              this.password = "";
+              this.$router.push("/");
+            });
           } else {
-            alert("That did not work");
+            if (res.status === 401) {
+              this.message = "Either email or password is wrong";
+            } else {
+              alert("That did not work");
+            }
           }
-        }
-      });
+        });
+      } else {
+        this.message = "Email and Password must contain a value!";
+      }
     },
     register() {
       this.message = null;
-      ES.register({
-        email: this.username,
-        password: this.password,
-      }).then((res) => {
-        if (res.ok) {
-          this.username = null;
-          this.password = null;
-          this.message = "Account created";
-        } else {
-          alert("That did not work");
-        }
-      });
+      if (this.username !== "" && this.password !== "") {
+        ES.register({
+          email: this.username,
+          password: this.password,
+        }).then((res) => {
+          if (res.ok) {
+            this.username = "";
+            this.password = "";
+            this.message = "Account created";
+          } else {
+            alert("That did not work");
+          }
+        });
+      } else {
+        this.message = "Email and Password must contain a value!";
+      }
+    },
+    resetMessage() {
+      this.message = null;
     },
   },
 };
