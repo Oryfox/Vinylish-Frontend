@@ -28,14 +28,8 @@
           />
         </svg>
       </div>
-      <RouterLink to="/records" class="rl"
-        ><u v-if="this.$route.name === 'records'">Records</u
-        ><span v-else>Records</span></RouterLink
-      >
-      <RouterLink to="/artists" class="rl"
-        ><u v-if="this.$route.name === 'artists'">Artists</u
-        ><span v-else>Artists</span></RouterLink
-      >
+      <RouterLink to="/records" class="rl">Records</RouterLink>
+      <RouterLink to="/artists" class="rl">Artists</RouterLink>
 
       <div class="navbar-buttons">
         <div
@@ -45,15 +39,12 @@
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="22"
-            height="22"
+            width="32"
+            height="32"
             fill="currentColor"
-            class="bi bi-plus-circle"
+            class="bi bi-plus create-button"
             viewBox="0 0 16 16"
           >
-            <path
-              d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"
-            />
             <path
               d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
             />
@@ -139,6 +130,14 @@ nav {
 .navbar-button:hover {
   background: white;
   transition-duration: 0.3s;
+}
+.create-button {
+  transform: rotate(0deg) scale(1, 1);
+  transition: transform 400ms;
+  cursor: pointer;
+}
+.navbar-button:hover .create-button {
+  transform: rotate(90deg) scale(1.2, 1.2);
 }
 
 .rl {
