@@ -34,7 +34,7 @@
         <b>List view</b>
         <label class="switch">
           <input type="checkbox" v-model="grid" @change="gridsettings" />
-          <span class="slider round"></span>
+          <span :class="grid ? 'slider-active round' : 'slider round'"></span>
         </label>
         <b>Grid view</b>
       </div>
@@ -290,11 +290,33 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgb(169, 132, 172);
+  background-color: var(--primary-color);
   -webkit-transition: 0.4s;
   transition: 0.4s;
 }
 .slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+.slider-active {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--text-color);
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+.slider-active:before {
   position: absolute;
   content: "";
   height: 26px;
@@ -314,6 +336,18 @@ input:checked + .slider:before {
   border-radius: 34px;
 }
 .slider.round:before {
+  border-radius: 50%;
+}
+
+input:checked + .slider-active:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+.slider-active.round {
+  border-radius: 34px;
+}
+.slider-active.round:before {
   border-radius: 50%;
 }
 </style>

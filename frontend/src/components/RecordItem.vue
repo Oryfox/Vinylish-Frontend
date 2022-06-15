@@ -66,6 +66,7 @@ img {
 }
 .artist {
   font-size: initial;
+  color: var(--mild-color2);
 }
 .details {
   display: none;

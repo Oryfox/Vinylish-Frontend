@@ -107,8 +107,21 @@ export default {
   color: red;
   font-size: 0.8rem;
 }
+.btn-primary {
+  background: var(--bright-color);
+  border-color: var(--bright-color);
+}
+.btn-primary:focus {
+  box-shadow: 1px 1px 10px 1px var(--bright-color);
+}
+.btn-outline-primary {
+  border-color: var(--bright-color);
+  color: var(--bright-color);
+}
 .btn-outline-primary:hover {
   background: #f0f0f0;
-  color: var(--bs-blue);
+}
+.btn-outline-primary:focus {
+  box-shadow: 1px 1px 10px 1px var(--bright-color);
 }
 </style>

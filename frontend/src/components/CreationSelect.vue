@@ -157,10 +157,41 @@ export default {
 .btn-close {
   margin-left: auto;
 }
+.btn-primary {
+  background: var(--bright-color);
+  border-color: var(--bright-color);
+}
+.btn-primary:focus {
+  box-shadow: 1px 1px 10px 1px var(--bright-color);
+}
+.btn-outline-primary {
+  border-color: var(--bright-color);
+  color: var(--bright-color);
+}
 .btn-outline-primary:hover {
   background: #f0f0f0;
-  color: var(--bs-blue);
 }
+.btn-outline-primary:focus {
+  box-shadow: 1px 1px 10px 1px var(--bright-color);
+}
+
+.confirm-group .btn-primary {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: var(--text-color);
+}
+.confirm-group .btn-primary:focus {
+  box-shadow: 1px 1px 10px 1px var(--primary-color);
+}
+.confirm-group .btn-secondary {
+  color: var(--text-color);
+  border-color: var(--secondary-color);
+  background: var(--secondary-color);
+}
+.confirm-group .btn-secondary:focus {
+  box-shadow: 1px 1px 10px 1px var(--secondary-color);
+}
+
 .input-holder {
   display: flex;
   flex-direction: column;

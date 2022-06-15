@@ -48,4 +48,7 @@ img {
   max-width: 16rem;
   max-height: auto;
 }
+span {
+  color: var(--mild-color2);
+}
 </style>

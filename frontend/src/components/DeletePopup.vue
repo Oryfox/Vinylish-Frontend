@@ -2,17 +2,21 @@
   <div @click="cancel">
     <div class="background" v-on:click.stop>
       <div class="btn-holder">
-        <button class="btn btn-secondary" @click="cancel">Cancel</button>
-        <button class="btn btn-warning" @click="confirm">
-          Confirm deletion
-        </button>
+        <SecondaryButton @click="cancel" v-text="'Cancel'" />
+        <PrimaryButton @click="confirm" v-text="'Confirm deletion'"/>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import PrimaryButton from "../components/PrimaryButton.vue"
+import SecondaryButton from "../components/SecondaryButton.vue";
 export default {
+  components: {
+    PrimaryButton,
+    SecondaryButton
+  },
   methods: {
       cancel() {
           this.$emit('cancel')

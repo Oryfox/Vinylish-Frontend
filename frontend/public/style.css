@@ -21,6 +21,10 @@
     --text-color: #734B5E;
     --bright-color: #64A6BD;
     --mild-color: #ADA7C9;
+    --mild-color2: #6f66b2;
     --primary-color: #D7B9D5;
     --secondary-color: #F4CAE0;
+}
+body {
+    color: var(--text-color);
 }

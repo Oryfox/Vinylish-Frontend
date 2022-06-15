@@ -55,12 +55,8 @@
       </div>
 
       <div class="btn-group button-holder">
-        <button class="btn btn-warning" @click="toggleEditModal">
-          Edit record
-        </button>
-        <button class="btn btn-danger" @click="toggleDeleteModal">
-          Delete record
-        </button>
+        <PrimaryButton @click="toggleEditModal" v-text="'Edit record'" />
+        <SecondaryButton  @click="toggleDeleteModal" v-text="'Delete record'" />
       </div>
     </div>
     <div class="right-split">
@@ -110,10 +106,14 @@
 import EditPopup from "../components/EditPopup.vue";
 import DeletePopup from "../components/DeletePopup.vue";
 import ES from "../plugins/eventService";
+import PrimaryButton from "../components/PrimaryButton.vue";
+import SecondaryButton from "../components/SecondaryButton.vue";
 export default {
   components: {
     EditPopup,
     DeletePopup,
+    PrimaryButton,
+    SecondaryButton
   },
   data() {
     return {
@@ -216,7 +216,7 @@ export default {
   font-size: 2rem;
 }
 .artist {
-  color: darkslategray;
+  color: var(--mild-color2);
   transition-duration: 0.5s;
 }
 
@@ -240,7 +240,7 @@ export default {
   left: 0;
   width: 100%;
   height: 0.1em;
-  background-color: darkslategray;
+  background-color: var(--primary-color);
   opacity: 0;
   transition: opacity 300ms, transform 300ms;
   transform: translate3d(-100%, 0, 0);

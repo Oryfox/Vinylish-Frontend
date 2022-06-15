@@ -4,31 +4,33 @@
     <!--<RouterLink to="/" class="rl">Home</RouterLink>
     <RouterLink to="/about" class="rl">About</RouterLink>-->
     <div v-if="cookie" class="navb">
-      <div
-        @click="this.$router.go(-1)"
-        class="back-button"
-        v-if="
+      <div class="router-links">
+        <div
+            @click="this.$router.go(-1)"
+            class="rl"
+            v-if="
           this.$route.name !== 'records' &&
           this.$route.name !== 'artists' &&
           this.$route.name !== 'logout' &&
           this.$route.name !== 'login'
         "
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          fill="currentColor"
-          class="bi bi-chevron-left"
-          viewBox="0 0 16 16"
         >
-          <path
-            fill-rule="evenodd"
-            d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"
-          />
-        </svg>
-      </div>
-      <div class="router-links">
+          <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              class="bi bi-chevron-left"
+              viewBox="0 0 16 16"
+          >
+            <path
+                fill-rule="evenodd"
+                d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"
+            />
+          </svg>
+          Back
+        </div>
+
         <RouterLink to="/records" class="rl">Records</RouterLink>
         <RouterLink to="/artists" class="rl">Artists</RouterLink>
       </div>
@@ -54,22 +56,9 @@
         </div>
 
         <div class="navbar-button" @click="this.$router.push('/logout')">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="22"
-            height="22"
-            fill="currentColor"
-            class="bi bi-box-arrow-right"
-            viewBox="0 0 16 16"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"
-            />
-            <path
-              fill-rule="evenodd"
-              d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"
-            />
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
           </svg>
         </div>
       </div>
@@ -155,6 +144,8 @@ nav {
   align-items: center;
   position: relative;
   font-weight: 500;
+  cursor: pointer;
+  stroke: var(--text-color);
 }
 .rl::after  {
   display: inline-block;
@@ -170,24 +161,6 @@ nav {
 }
 .rl:last-child::after {
   display: none;
-}
-
-.back-button {
-  text-decoration: none;
-  border-radius: 1rem;
-  color: #5f00a2;
-  margin-right: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition-duration: 0.3s;
-  width: 2.5rem;
-  height: 2.5rem;
-  cursor: pointer;
-}
-.back-button:hover {
-  transition-duration: 0.3s;
-  background: white;
 }
 
 img {

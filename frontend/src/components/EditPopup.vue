@@ -78,24 +78,19 @@
               ><b>{{ track.rank }}</b></span
             >
             <input type="text" v-model="track.title" class="track-list-input" />
-            <button
-              class="btn btn-danger track-list-remove"
+            <SecondaryButton
+              class="track-list-remove"
               @click="removeTrack(index)"
-            >
-              -
-            </button>
+              v-text="'-'"
+            />
           </div>
-          <button class="btn btn-primary add-track-button" @click="addTrack">
-            Add Track
-          </button>
+          <PrimaryButton class="add-track-button" @click="addTrack" v-text="'Add Track'"/>
         </div>
 
         <button class="btn btn-primary paddingbutton">f</button>
         <div class="control-buttons">
-          <button class="btn btn-secondary" @click="cancelEdit">Cancel</button>
-          <button class="btn btn-primary" @click="saveEdit">
-            Save changes
-          </button>
+          <SecondaryButton @click="cancelEdit" v-text="'Cancel'"/>
+          <PrimaryButton @click="saveEdit" v-text="'Save changes'"/>
         </div>
       </div>
     </div>
@@ -103,7 +98,13 @@
 </template>
 
 <script>
+import PrimaryButton from "../components/PrimaryButton.vue";
+import SecondaryButton from "../components/SecondaryButton.vue";
 export default {
+  components: {
+    PrimaryButton,
+    SecondaryButton
+  },
     props: {
       record: null,
       action: String
