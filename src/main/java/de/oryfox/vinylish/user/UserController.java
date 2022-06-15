@@ -29,6 +29,11 @@ public class UserController {
         }
     }
 
+    @GetMapping
+    public UserDto getUser(@RequestHeader String token) {
+        return new UserDto(check(token));
+    }
+
     @PutMapping
     public void alterUser(@RequestHeader String token, @RequestBody User req) {
         var user = check(token);

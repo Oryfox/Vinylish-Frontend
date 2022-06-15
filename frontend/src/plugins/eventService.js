@@ -94,5 +94,8 @@ export default {
     },
     getAutoRecord(artist, title) {
         return get("record/auto?artist=" + encodeURI(artist) + "&title=" + encodeURI(title))
+    },
+    getUser() {
+        return get("user");
     }
 }
