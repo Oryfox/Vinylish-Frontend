@@ -28,8 +28,10 @@
           />
         </svg>
       </div>
-      <RouterLink to="/records" class="rl">Records</RouterLink>
-      <RouterLink to="/artists" class="rl">Artists</RouterLink>
+      <div class="router-links">
+        <RouterLink to="/records" class="rl">Records</RouterLink>
+        <RouterLink to="/artists" class="rl">Artists</RouterLink>
+      </div>
 
       <div class="navbar-buttons">
         <div
@@ -140,17 +142,34 @@ nav {
   transform: rotate(90deg) scale(1.2, 1.2);
 }
 
+.router-links {
+  display: flex;
+}
 .rl {
+  color: var(--text-color);
   text-decoration: none;
   border-radius: 1rem;
-  color: #5f00a2;
-  margin-right: 2rem;
-  padding: 0.5rem 1rem;
+  margin-right: 1.4rem;
   transition-duration: 0.3s;
+  display: flex;
+  align-items: center;
+  position: relative;
+  font-weight: 500;
 }
-.rl:hover {
-  transition-duration: 0.3s;
-  background: white;
+.rl::after  {
+  display: inline-block;
+  content: "";
+  position: absolute;
+  width: 2px;
+  height: 20px;
+  right: -0.7rem;
+  border-right: 2px solid var(--text-color);
+}
+.rl:last-child {
+  padding-right: 0;
+}
+.rl:last-child::after {
+  display: none;
 }
 
 .back-button {

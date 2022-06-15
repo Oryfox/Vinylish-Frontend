@@ -16,3 +16,11 @@
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+:root {
+    --text-color: #734B5E;
+    --bright-color: #64A6BD;
+    --mild-color: #ADA7C9;
+    --primary-color: #D7B9D5;
+    --secondary-color: #F4CAE0;
+}
