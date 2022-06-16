@@ -100,5 +100,8 @@ export default {
     },
     getArtists() {
         return get("artist");
+    },
+    getRecordsForArtist(artist) {
+        return get("artist/" + encodeURI(artist));
     }
 }

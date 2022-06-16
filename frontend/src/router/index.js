@@ -22,7 +22,7 @@ const router = createRouter({
       component: () => import("../views/RecordView.vue")
     },
     {
-      path: "/artists",
+      path: "/artists/:name?",
       name: "artists",
       component: () => import("../views/ArtistView.vue")
     },

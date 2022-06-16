@@ -3,7 +3,7 @@
     <div class="image-wrapper">
       <img :src="baseUrl + 'artist/' + artist + '/image'" alt="Artist Image" />
     </div>
-    <b>{{ artist }}</b>
+    <b :class="'underline ' + (selected ? 'underlinenow' : '')">{{ artist }}</b>
   </div>
 </template>
 
@@ -13,6 +13,10 @@ export default {
     artist: {
       type: String,
       default: null,
+    },
+    selected: {
+      type: Boolean,
+      default: false,
     },
   },
   created() {},
@@ -61,5 +65,27 @@ b {
 .base:hover .image-wrapper {
   transform: scale(1, 1);
   transition: transform 500ms;
+}
+.underline {
+  transition-duration: 0.5s;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+}
+.underline:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0.1em;
+  background-color: var(--primary-color);
+  opacity: 0;
+  transition: opacity 300ms, transform 300ms;
+  transform: translate3d(-100%, 0, 0);
+}
+.underlinenow::after {
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
 }
 </style>
