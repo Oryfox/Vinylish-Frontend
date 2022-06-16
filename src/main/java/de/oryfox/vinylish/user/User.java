@@ -1,5 +1,6 @@
 package de.oryfox.vinylish.user;
 
+import de.oryfox.vinylish.ImageType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,4 +21,5 @@ public class User {
     private String displayName;
     private String password;
     private boolean isDisabled;
+    private ImageType imageType;
 }

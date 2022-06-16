@@ -1,5 +1,6 @@
 package de.oryfox.vinylish.user;
 
+import de.oryfox.vinylish.ImageType;
 import de.oryfox.vinylish.user.session.Session;
 import de.oryfox.vinylish.user.session.SessionRepository;
 import lombok.AllArgsConstructor;
@@ -23,6 +24,7 @@ public class UserController {
         }
         if (user.getEmail() != null && !user.getEmail().equals("") && user.getPassword() != null && !user.getPassword().equals("") && user.getEmail().matches("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")) {
             user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+            user.setImageType(ImageType.DEFAULT);
             userRepository.save(user);
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);

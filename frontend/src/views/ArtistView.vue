@@ -55,7 +55,6 @@ export default {
         });
     },
     select(artist, push) {
-      console.log(this.$route);
       if (!push) history.pushState({}, null, "/artists/" + encodeURI(artist));
       this.selectedArtist = artist;
       ES.getRecordsForArtist(this.selectedArtist)
