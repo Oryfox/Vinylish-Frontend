@@ -19,4 +19,7 @@ public interface RecordRepository extends JpaRepository<Record, Long> {
     List<Record> findAllByCreator(User creator);
 
     List<Record> findAllByCreatorAndArtist(User creator, String artist);
+
+    @Query("select distinct r.artist from Record r where r.creator = :user")
+    List<String> findAllArtists(User user);
 }

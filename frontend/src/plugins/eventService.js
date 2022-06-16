@@ -97,5 +97,8 @@ export default {
     },
     getUser() {
         return get("user");
+    },
+    getArtists() {
+        return get("artist");
     }
 }

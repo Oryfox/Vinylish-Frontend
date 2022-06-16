@@ -49,13 +49,17 @@ public class ArtistController {
         return recordRepository.findAllByCreatorAndArtist(userController.check(token), name);
     }
 
+    @GetMapping
+    public List<String> getArtists(@RequestHeader String token) {
+        return recordRepository.findAllArtists(userController.check(token));
+    }
+
     @GetMapping(value = "/{name}/image")
-    public ResponseEntity<Object> getArtistImage(@PathVariable String name, @RequestHeader String token) {
-        userController.check(token);
+    public ResponseEntity<Object> getArtistImage(@PathVariable String name) {
         var opt = artistRepository.findFirstByName(name);
         if (opt.isEmpty()) {
             getImage(name);
-            return getArtistImage(name, token);
+            return getArtistImage(name);
         } else {
             if (opt.get().getImageType() == ImageType.CUSTOM) {
                 var imgFile = new FileSystemResource("images/" + opt.get().getId());
@@ -64,7 +68,7 @@ public class ArtistController {
                 } catch (IOException ignored) {
                     opt.get().setImageType(ImageType.NONE);
                     artistRepository.delete(opt.get());
-                    return getArtistImage(name, token);
+                    return getArtistImage(name);
                 }
             }
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
