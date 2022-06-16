@@ -6,9 +6,7 @@
           :src="
             baseUrl +
             'record/image?id=' +
-            this.record.id +
-            '&time=' +
-            Date.now()
+            this.record.id
           "
           alt=""
           class="background"
@@ -19,9 +17,7 @@
           :src="
             baseUrl +
             'record/image?id=' +
-            this.record.id +
-            '&time=' +
-            Date.now()
+            this.record.id
           "
           alt=""
           class="foreground"
