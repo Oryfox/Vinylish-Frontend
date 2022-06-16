@@ -56,7 +56,7 @@
 
       <div class="btn-group button-holder">
         <PrimaryButton @click="toggleEditModal" v-text="'Edit record'" />
-        <SecondaryButton  @click="toggleDeleteModal" v-text="'Delete record'" />
+        <SecondaryButton @click="toggleDeleteModal" v-text="'Delete record'" />
       </div>
     </div>
     <div class="right-split">
@@ -113,7 +113,7 @@ export default {
     EditPopup,
     DeletePopup,
     PrimaryButton,
-    SecondaryButton
+    SecondaryButton,
   },
   data() {
     return {
@@ -139,7 +139,7 @@ export default {
       document.getElementById("foreground").classList.toggle("foreground-blur");
     },
     goToArtist() {
-      this.$router.push("/artist/" + this.record.artist);
+      this.$router.push("/artists/" + this.record.artist);
     },
     goToYoutubeSearch(song) {
       window
