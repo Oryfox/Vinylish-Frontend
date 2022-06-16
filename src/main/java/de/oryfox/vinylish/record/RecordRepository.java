@@ -17,4 +17,6 @@ public interface RecordRepository extends JpaRepository<Record, Long> {
     Optional<Record> findById(Long id, User creator);
 
     List<Record> findAllByCreator(User creator);
+
+    List<Record> findAllByCreatorAndArtist(User creator, String artist);
 }
