@@ -4,10 +4,18 @@ import de.oryfox.vinylish.ImageType;
 import de.oryfox.vinylish.user.session.Session;
 import de.oryfox.vinylish.user.session.SessionRepository;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.io.File;
+import java.nio.file.Files;
 
 @RestController
 @AllArgsConstructor
@@ -34,6 +42,38 @@ public class UserController {
     @GetMapping
     public UserDto getUser(@RequestHeader String token) {
         return new UserDto(check(token));
+    }
+
+    @GetMapping("image")
+    @SneakyThrows
+    public ResponseEntity<Object> getUserImage(@RequestParam String token) {
+        var user = check(token);
+        if (user.getImageType() == ImageType.CUSTOM) {
+            var imgFile = new FileSystemResource("images/" + user.getId());
+            return ResponseEntity.ok(new InputStreamResource(imgFile.getInputStream()));
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @SneakyThrows
+    @PostMapping("image")
+    public void getUserImage(@RequestParam String token, @RequestPart MultipartFile file) {
+        var user = check(token);
+        if (file.getContentType() == null || !file.getContentType().toLowerCase().contains("image"))
+            throw new ResponseStatusException(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Please provide image");
+        Files.write(new File("images/" + user.getId()).toPath(), file.getBytes());
+        user.setImageType(ImageType.CUSTOM);
+        userRepository.save(user);
+    }
+
+    @SneakyThrows
+    @DeleteMapping("image")
+    public void deleteImage(@RequestHeader String token) {
+        var user = check(token);
+        user.setImageType(ImageType.DEFAULT);
+        userRepository.save(user);
+        Files.deleteIfExists(new File("images/" + user.getId()).toPath());
     }
 
     @PutMapping

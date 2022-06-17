@@ -103,5 +103,20 @@ export default {
     },
     getRecordsForArtist(artist) {
         return get("artist/" + encodeURI(artist));
+    },
+    postUserImage(formdata) {
+        if (Cookies.get("token") === undefined) {
+            router.push("/login")
+        } else
+            return fetch(baseurl + "user/image?token=" + Cookies.get("token"), {
+                headers: {
+                    "token": Cookies.get("token"),
+                },
+                method: "POST",
+                body: formdata
+            })
+    },
+    deleteUserImage() {
+        return hDelete("user/image");
     }
 }
