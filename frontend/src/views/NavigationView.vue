@@ -114,7 +114,7 @@
 
         <PrimaryButton
           class="logout-button"
-          @click="this.$router.push('/logout')"
+          @click="logout"
           v-text="'Logout'"
         />
       </div>
@@ -162,6 +162,11 @@ export default {
     goToSettings() {
       this.showUserPopup = false;
       this.$router.push("/settings");
+    },
+    logout() {
+      this.user = null;
+      this.showUserPopup = false;
+      this.$router.push("/logout");
     },
   },
 };
