@@ -121,5 +121,8 @@ export default {
     },
     deleteUserImage() {
         return hDelete("user/image");
+    },
+    updateDisplayName(name) {
+        return put("user/name", name);
     }
 }

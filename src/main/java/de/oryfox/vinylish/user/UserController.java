@@ -44,6 +44,13 @@ public class UserController {
         return new UserDto(check(token));
     }
 
+    @PutMapping("name")
+    public void updateName(@RequestHeader String token, @RequestBody String name) {
+        var user = check(token);
+        user.setDisplayName(name);
+        userRepository.save(user);
+    }
+
     @GetMapping("image")
     @SneakyThrows
     public ResponseEntity<Object> getUserImage(@RequestParam String token) {

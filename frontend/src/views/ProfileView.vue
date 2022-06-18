@@ -1,5 +1,5 @@
 <template>
-  <div class="base" v-if="user">
+  <div class="base" v-if="user" id="page">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="200"
@@ -44,26 +44,12 @@
         </svg>
       </div>
     </div>
-    <div class="name" v-if="user.displayName">{{ user.displayName }}</div>
-    <div class="empty-name name" v-else>
-      User
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        fill="currentColor"
-        class="bi bi-pencil-square edit-button"
-        viewBox="0 0 16 16"
-      >
-        <path
-          d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"
-        />
-        <path
-          fill-rule="evenodd"
-          d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-        />
-      </svg>
-    </div>
+    <input
+      type="text"
+      v-model="user.displayName"
+      @keyup.enter="updateDisplayName"
+      id="namefield"
+    />
 
     <input
       type="file"
@@ -92,6 +78,8 @@ export default {
         .then((res) => res.json())
         .then((json) => {
           this.user = json;
+          if (!this.user.displayName)
+            this.user.displayName = "User";
         });
     },
     anim() {
@@ -126,6 +114,15 @@ export default {
         })
         .catch(() => alert("Sorry, that did not work"));
     },
+    updateDisplayName() {
+      ES.updateDisplayName(this.user.displayName)
+      .then(res => {
+        if (res.ok) {
+          this.getUser();
+          document.getElementById("namefield").blur();
+        }
+      });
+    }
   },
 };
 </script>
@@ -153,8 +150,10 @@ export default {
   animation: 1s ease 0s 1 fade;
   filter: drop-shadow(1px 10px 5px rgba(0, 0, 0, 0.2));
   -webkit-filter: drop-shadow(1px 10px 5px rgba(0, 0, 0, 0.2));
+  backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   -moz-backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
   -webkit-transform: translate3d(0, 0, 0);
   -moz-transform: translate3d(0, 0, 0);
   position: relative;
@@ -192,6 +191,14 @@ img {
   -webkit-transform: translateX(-75%);
   -moz-transform: translateX(-75%);
   transition: transform 500ms;
+}
+#namefield {
+  color: var(--text-color);
+  font-weight: 700;
+  font-size: 28px;
+  text-align: center;
+  border: none;
+  outline: none;
 }
 .name {
   font-weight: 700;
