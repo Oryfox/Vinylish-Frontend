@@ -17,9 +17,11 @@ public interface RecordRepository extends JpaRepository<Record, Long> {
     Optional<Record> findById(Long id, User creator);
 
     List<Record> findAllByCreator(User creator);
+    List<Record> findAllByCreatorOrderByTitle(User creator);
+    List<Record> findAllByCreatorOrderByArtist(User creator);
 
-    List<Record> findAllByCreatorAndArtist(User creator, String artist);
+    List<Record> findAllByCreatorAndArtistOrderByTitle(User creator, String artist);
 
-    @Query("select distinct r.artist from Record r where r.creator = :user")
+    @Query("select distinct r.artist from Record r where r.creator = :user order by r.artist")
     List<String> findAllArtists(User user);
 }

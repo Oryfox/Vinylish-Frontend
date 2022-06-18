@@ -59,6 +59,9 @@ export default {
     getRecords() {
         return get("record")
     },
+    getRecordsSorted(sort) {
+        return get("record?sort=" + sort)
+    },
     getRecord(id) {
         return get("record?id=" + id)
     },

@@ -49,20 +49,14 @@ export default {
     getArtists() {
       ES.getArtists()
         .then((res) => res.json())
-        .then((json) => {
-          this.artists = json;
-          this.artists.sort((a, b) => a.toLowerCase() > b.toLowerCase());
-        });
+        .then((json) => this.artists = json);
     },
     select(artist, push) {
       if (!push) history.pushState({}, null, "/artists/" + encodeURI(artist));
       this.selectedArtist = artist;
       ES.getRecordsForArtist(this.selectedArtist)
         .then((res) => res.json())
-        .then((json) => {
-          this.records = json;
-          this.records.sort((a, b) => a.title > b.title);
-        });
+        .then((json) => this.records = json);
     },
   },
   watch: {

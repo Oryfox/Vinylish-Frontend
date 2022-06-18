@@ -45,7 +45,7 @@ public class RecordController {
     @GetMapping("auto")
     public Record retrieveRecordViaLastFM(@RequestHeader String token, @RequestParam String artist, @RequestParam String title) {
         userController.check(token);
-        var aInfo = lastFM.getAlbumInfo(artist,title);
+        var aInfo = lastFM.getAlbumInfo(artist, title);
         var record = new Record();
         record.setArtist(aInfo.getArtist());
         record.setTitle(aInfo.getName());
@@ -58,13 +58,22 @@ public class RecordController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> listRecord(@RequestHeader String token, @RequestParam(required = false) Long id) {
+    public ResponseEntity<Object> listRecord(@RequestHeader String token, @RequestParam(required = false) Long id, @RequestParam(required = false) String sort) {
         var user = userController.check(token);
         if (id != null) {
             var opt = recordRepository.findById(id, user);
             if (opt.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
             return ResponseEntity.ok(opt.get());
         } else {
+            if (sort != null)
+                switch (sort) {
+                    case "title" -> {
+                        return ResponseEntity.ok(recordRepository.findAllByCreatorOrderByTitle(user));
+                    }
+                    case "artist" -> {
+                        return ResponseEntity.ok(recordRepository.findAllByCreatorOrderByArtist(user));
+                    }
+                }
             return ResponseEntity.ok(recordRepository.findAllByCreator(user));
         }
     }

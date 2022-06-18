@@ -3,7 +3,7 @@
     <div class="orderholder">
       <label for="order">Order by</label>
       <select name="order" id="order" v-model="sortby" @change="sort">
-        <option value="unsorted">Unsorted</option>
+        <option :value="null">Unsorted</option>
         <option value="artist">Artist</option>
         <option value="title">Title</option>
       </select>
@@ -113,7 +113,7 @@ export default {
   data() {
     return {
       records: [],
-      sortby: "unsorted",
+      sortby: null,
       error: null,
       newRecord: null,
       selectVisible: false,
@@ -149,15 +149,20 @@ export default {
           this.error = "Could not establish connection to server";
         });
     },
+    getRecordsSorted(sort) {
+      ES.getRecordsSorted(sort)
+        .then((response) => response.json())
+        .then((data) => {
+          this.records = data;
+        })
+        .catch((error) => {
+          console.log(error);
+          this.error = "Could not establish connection to server";
+        });
+    },
     sort() {
-      if (this.sortby === "artist") {
-        this.records.sort(
-          (a, b) => a.artist.toLowerCase() > b.artist.toLowerCase()
-        );
-      } else if (this.sortby === "title") {
-        this.records.sort(
-          (a, b) => a.title.toLowerCase() > b.title.toLowerCase()
-        );
+      if (this.sortby) {
+        this.getRecordsSorted(this.sortby);
       } else {
         this.getRecords();
       }
@@ -266,6 +271,19 @@ export default {
 }
 .searchField label {
   color: gray;
+}
+#searchField {
+  border-radius: 0.5rem;
+  border: solid thin rgba(0, 0, 0, 0.2);
+  padding: 0.2rem 0.5rem;
+  color: rgba(0, 0, 0, 0.7);
+  caret-color: rgba(0, 0, 0, 0.4);
+}
+#searchField:focus {
+  outline: none !important;
+  border-radius: 0.5rem;
+  border: solid thin rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.2);
 }
 .toggleGrid {
   display: flex;

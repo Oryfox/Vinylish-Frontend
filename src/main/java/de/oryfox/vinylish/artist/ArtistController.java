@@ -46,7 +46,7 @@ public class ArtistController {
 
     @GetMapping("/{name}")
     public List<Record> getRecordsByArtistName(@PathVariable String name, @RequestHeader String token) {
-        return recordRepository.findAllByCreatorAndArtist(userController.check(token), name);
+        return recordRepository.findAllByCreatorAndArtistOrderByTitle(userController.check(token), name);
     }
 
     @GetMapping
