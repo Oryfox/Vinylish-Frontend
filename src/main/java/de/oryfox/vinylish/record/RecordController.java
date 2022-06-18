@@ -5,8 +5,9 @@ import de.oryfox.vinylish.lastfm.LastFM;
 import de.oryfox.vinylish.track.Track;
 import de.oryfox.vinylish.user.UserController;
 import de.oryfox.vinylish.user.UserRepository;
-import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
@@ -21,20 +22,35 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Objects;
 
 @RestController
 @RequestMapping("record")
-@AllArgsConstructor
 public class RecordController {
 
     final RecordRepository recordRepository;
     final UserRepository userRepository;
     final UserController userController;
     final LastFM lastFM;
+
+    @Value("${genius.secret}")
+    private String geniusSecret;
+
+    public RecordController(RecordRepository recordRepository, UserRepository userRepository, UserController userController, LastFM lastFM) {
+        this.recordRepository = recordRepository;
+        this.userRepository = userRepository;
+        this.userController = userController;
+        this.lastFM = lastFM;
+    }
 
     @PostMapping
     public Record addRecord(@RequestHeader String token, @RequestBody Record record) {
@@ -52,7 +68,7 @@ public class RecordController {
         record.setColor("Black");
         record.setBootleg(false);
         record.setLimited(false);
-        record.setReleaseYear(2000);
+        record.setReleaseYear(aInfo.getTracks() != null ? getReleaseYear(aInfo.getArtist(), aInfo.getTracks().stream().findFirst().orElse(new de.oryfox.vinylish.lastfm.Track()).getName()) : 2000);
         record.setTracks(aInfo.getTracks() != null ? aInfo.getTracks().stream().map(track -> new Track(track.getName(), track.getRank())).toList() : null);
         return record;
     }
@@ -189,5 +205,27 @@ public class RecordController {
         Files.deleteIfExists(new File("images/" + recordOpt.get().getId()).toPath());
         recordOpt.get().setImageType(ImageType.DEFAULT);
         recordRepository.save(recordOpt.get());
+    }
+
+    public int getReleaseYear(String artist, String title) {
+        if (title == null)
+            return 2000;
+
+        try {
+            var request = HttpRequest.newBuilder(URI.create("https://api.genius.com/search?q=" + URLEncoder.encode(artist + " " + title, StandardCharsets.UTF_8)))
+                    .header("Authorization", "Bearer " + geniusSecret).GET().build();
+            var response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 200)
+                return new JSONObject(response.body())
+                        .getJSONObject("response")
+                        .getJSONArray("hits")
+                        .getJSONObject(0)
+                        .getJSONObject("result")
+                        .getJSONObject("release_date_components")
+                        .getInt("year");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 2000;
     }
 }
