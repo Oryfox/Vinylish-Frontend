@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -18,26 +19,22 @@ import java.util.List;
 public class LastFM {
 
     private static final String baseUrl = "https://ws.audioscrobbler.com/2.0";
-    
+
     @Value("${lastfm.apikey}")
     private String key;
 
-    @SneakyThrows
-    public AlbumInfo getAlbumInfo(String artist, String album) {
-        try {
-            return new ObjectMapper()
-                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                    .readValue(new URL(
-                                    String.format("%s?api_key=%s&artist=%s&album=%s&format=json&method=album.getInfo",
-                                            baseUrl,
-                                            key,
-                                            enc(artist),
-                                            enc(album))),
-                            AlbumInfo.AlbumInfoResponse.class)
-                    .getAlbum();
-        } catch (FileNotFoundException ignored) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
+    public AlbumInfo getAlbumInfo(String artist, String album) throws IOException {
+        return new ObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .readValue(new URL(
+                                String.format("%s?api_key=%s&artist=%s&album=%s&format=json&method=album.getInfo",
+                                        baseUrl,
+                                        key,
+                                        enc(artist),
+                                        enc(album))),
+                        AlbumInfo.AlbumInfoResponse.class)
+                .getAlbum();
+
     }
 
     @SneakyThrows
@@ -53,7 +50,6 @@ public class LastFM {
                 .getResults()
                 .getAlbummatches().getAlbum();
     }
-
 
 
     private String enc(String unenc) {

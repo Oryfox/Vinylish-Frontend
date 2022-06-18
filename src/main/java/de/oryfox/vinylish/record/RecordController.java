@@ -57,6 +57,7 @@ public class RecordController {
         return recordRepository.save(record);
     }
 
+    @SneakyThrows
     @GetMapping("auto")
     public Record retrieveRecordViaLastFM(@RequestHeader String token, @RequestParam String artist, @RequestParam String title) {
         userController.check(token);
@@ -120,7 +121,6 @@ public class RecordController {
         return recordRepository.save(record);
     }
 
-    @SneakyThrows
     @GetMapping("image")
     public ResponseEntity<InputStreamResource> getImage(@RequestParam Long id) {
         var opt = recordRepository.findById(id);
@@ -137,7 +137,7 @@ public class RecordController {
                     opt.get().setImageType(ImageType.CUSTOM);
                     recordRepository.save(opt.get());
                     return getImage(id);
-                } catch (MalformedURLException | FileNotFoundException ignored) {
+                } catch (IOException e) {
                     opt.get().setImageType(ImageType.DEFAULT);
                     recordRepository.save(opt.get());
                     return ResponseEntity.ok(new InputStreamResource(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("icon.png"))));
@@ -147,7 +147,7 @@ public class RecordController {
                 var imgFile = new FileSystemResource("images/" + id);
                 try {
                     return ResponseEntity.ok(new InputStreamResource(imgFile.getInputStream()));
-                } catch (FileNotFoundException ignored) {
+                } catch (IOException ignored) {
                     opt.get().setImageType(ImageType.NONE);
                     recordRepository.save(opt.get());
                     return getImage(id);
