@@ -2,11 +2,16 @@
   <div class="root" v-if="error === null">
     <div class="orderholder">
       <label for="order">Order by</label>
-      <select name="order" id="order" v-model="sortby" @change="sort">
-        <option :value="null">Unsorted</option>
-        <option value="artist">Artist</option>
-        <option value="title">Title</option>
-      </select>
+
+      <Selector
+        :options="[
+          { type: null, display: 'Unsorted' },
+          { type: 'artist', display: 'Artist' },
+          { type: 'title', display: 'Title' },
+        ]"
+        :selected="sortby"
+        @change="sort"
+      />
 
       <div class="searchField">
         <label for="searchField"
@@ -103,17 +108,22 @@ import CreationSelect from "../components/CreationSelect.vue";
 import ES from "../plugins/eventService";
 import emitter from "tiny-emitter/instance";
 import GridItem from "../components/GridItem.vue";
+import Selector from "../components/Selector.vue";
 export default {
   components: {
     RecordItem,
     EditPopup,
     CreationSelect,
     GridItem,
+    Selector
   },
   data() {
     return {
       records: [],
-      sortby: null,
+      sortby: {
+        display: 'Unsorted',
+        type: null
+      },
       error: null,
       newRecord: null,
       selectVisible: false,
@@ -161,8 +171,8 @@ export default {
         });
     },
     sort() {
-      if (this.sortby) {
-        this.getRecordsSorted(this.sortby);
+      if (this.sortby.type) {
+        this.getRecordsSorted(this.sortby.type);
       } else {
         this.getRecords();
       }
