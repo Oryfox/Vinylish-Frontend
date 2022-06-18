@@ -119,10 +119,25 @@ export default {
                 body: formdata
             })
     },
+    postRecordImage(id, formdata) {
+        if (Cookies.get("token") === undefined) {
+            router.push("/login")
+        } else
+            return fetch(baseurl + "record/image?token=" + Cookies.get("token") + "&id=" + id, {
+                headers: {
+                    "token": Cookies.get("token"),
+                },
+                method: "POST",
+                body: formdata
+            })
+    },
     deleteUserImage() {
         return hDelete("user/image");
     },
     updateDisplayName(name) {
         return put("user/name", name);
+    },
+    deleteRecordImage(id, none) {
+        return hDelete("record/image?id=" + id + "&none=" + none);
     }
 }

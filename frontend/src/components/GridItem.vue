@@ -1,6 +1,16 @@
 <template>
   <div class="base" @click="navigateTo">
-    <img :src="baseUrl + 'record/image?id=' + this.record.id" alt="Cover" />
+    <img
+      :src="
+        baseUrl +
+        'record/image?id=' +
+        this.record.id +
+        '&t=' +
+        new Date().getTime()
+      "
+      alt="Cover"
+      :class="record.imageType === 'DEFAULT' ? 'noborder' : ''"
+    />
     <b>{{ this.record.title }}</b>
     <span>{{ this.record.artist }}</span>
   </div>
@@ -50,5 +60,8 @@ img {
 }
 span {
   color: var(--mild-color2);
+}
+.noborder {
+  border: none;
 }
 </style>

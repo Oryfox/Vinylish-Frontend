@@ -2,7 +2,14 @@
   <div @click="cancelEdit">
     <div class="modal-pane" v-if="record" v-on:click.stop>
       <div class="modalheader">
-        <span v-if="record.title !== null && record.artist !== null && record.title !== '' && record.artist !== ''">{{ action }}
+        <span
+          v-if="
+            record.title !== null &&
+            record.artist !== null &&
+            record.title !== '' &&
+            record.artist !== ''
+          "
+          >{{ action }}
           <span class="highlighted">{{ this.record.title }}</span> by
           <span class="highlighted">{{ this.record.artist }}</span>
         </span>
@@ -84,13 +91,17 @@
               v-text="'-'"
             />
           </div>
-          <PrimaryButton class="add-track-button" @click="addTrack" v-text="'Add Track'"/>
+          <PrimaryButton
+            class="add-track-button"
+            @click="addTrack"
+            v-text="'Add Track'"
+          />
         </div>
 
         <button class="btn btn-primary paddingbutton">f</button>
         <div class="control-buttons">
-          <SecondaryButton @click="cancelEdit" v-text="'Cancel'"/>
-          <PrimaryButton @click="saveEdit" v-text="'Save changes'"/>
+          <SecondaryButton @click="cancelEdit" v-text="'Cancel'" />
+          <PrimaryButton @click="saveEdit" v-text="'Save changes'" />
         </div>
       </div>
     </div>
@@ -100,43 +111,51 @@
 <script>
 import PrimaryButton from "../components/PrimaryButton.vue";
 import SecondaryButton from "../components/SecondaryButton.vue";
+
 export default {
   components: {
     PrimaryButton,
-    SecondaryButton
+    SecondaryButton,
   },
-    props: {
-      record: null,
-      action: String
+  data() {
+    return {
+      inserted: false,
+    };
+  },
+  props: {
+    record: null,
+    action: String,
+  },
+  methods: {
+    cancelEdit() {
+      this.$emit("cancel");
     },
-    methods: {
-      cancelEdit() {
-          this.$emit('cancel');
-      },
-      saveEdit() {
-          this.$emit('save');
-      },
-      addTrack() {
+    saveEdit() {
+      this.$emit("save");
+    },
+    addTrack() {
+      if (this.record.tracks)
         this.record.tracks.push({
           title: "",
-          rank: this.record.tracks.length + 1
+          rank: this.record.tracks.length + 1,
         });
-      },
-      removeTrack(index) {
-        this.record.tracks.splice(index, 1);
-      },
-      orderTracks() {
-        this.record.tracks.sort((a,b) => a.rank - b.rank);
-      },
-      adjustRank(track) {
-        let answer = prompt("Enter new rank", track.rank);
-        if (answer) {
-          track.rank = parseInt(answer);
-          this.orderTracks();
-        }
+      else this.record.tracks = [{ title: "", rank: 1 }];
+    },
+    removeTrack(index) {
+      this.record.tracks.splice(index, 1);
+    },
+    orderTracks() {
+      this.record.tracks.sort((a, b) => a.rank - b.rank);
+    },
+    adjustRank(track) {
+      let answer = prompt("Enter new rank", track.rank);
+      if (answer) {
+        track.rank = parseInt(answer);
+        this.orderTracks();
       }
-    }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -236,5 +255,31 @@ export default {
 }
 .add-track-button {
   margin-left: auto;
+}
+input[type*="text"] {
+  border-radius: 0.5rem;
+  border: solid thin rgba(0, 0, 0, 0.2);
+  padding: 0.2rem 0.5rem;
+  color: rgba(0, 0, 0, 0.7);
+  caret-color: rgba(0, 0, 0, 0.4);
+}
+input[type*="text"]:focus {
+  outline: none !important;
+  border-radius: 0.5rem;
+  border: solid thin rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.2);
+}
+input[type*="number"] {
+  border-radius: 0.5rem;
+  border: solid thin rgba(0, 0, 0, 0.2);
+  padding: 0.2rem 0.5rem;
+  color: rgba(0, 0, 0, 0.7);
+  caret-color: rgba(0, 0, 0, 0.4);
+}
+input[type*="number"]:focus {
+  outline: none !important;
+  border-radius: 0.5rem;
+  border: solid thin rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.2);
 }
 </style>

@@ -3,27 +3,58 @@
     <div class="left-split">
       <div class="image">
         <img
-          :src="
-            baseUrl +
-            'record/image?id=' +
-            this.record.id
-          "
+          :src="baseUrl + 'record/image?id=' + this.record.id"
           alt=""
-          class="background"
+          class="background coverimage"
           id="background"
           @load="applyBlur"
         />
         <img
-          :src="
-            baseUrl +
-            'record/image?id=' +
-            this.record.id
-          "
+          :src="baseUrl + 'record/image?id=' + this.record.id"
           alt=""
-          class="foreground"
+          :class="
+            'foreground coverimage' +
+            (record.imageType === 'DEFAULT' ? ' noborder' : '')
+          "
           id="foreground"
           @load="applyBorder"
+          @click="selectImage"
         />
+        <div class="delete-image-button">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="64"
+            height="64"
+            fill="currentColor"
+            class="bi bi-trash trash-can"
+            viewBox="0 0 16 16"
+            @click="deleteImage(false)"
+          >
+            <path
+              d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"
+            />
+            <path
+              fill-rule="evenodd"
+              d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
+            />
+          </svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="64"
+            height="64"
+            fill="currentColor"
+            class="bi bi-cloud-download set-default-image"
+            viewBox="0 0 16 16"
+            @click="deleteImage(true)"
+          >
+            <path
+              d="M4.406 1.342A5.53 5.53 0 0 1 8 0c2.69 0 4.923 2 5.166 4.579C14.758 4.804 16 6.137 16 7.773 16 9.569 14.502 11 12.687 11H10a.5.5 0 0 1 0-1h2.688C13.979 10 15 8.988 15 7.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 2.825 10.328 1 8 1a4.53 4.53 0 0 0-2.941 1.1c-.757.652-1.153 1.438-1.153 2.055v.448l-.445.049C2.064 4.805 1 5.952 1 7.318 1 8.785 2.23 10 3.781 10H6a.5.5 0 0 1 0 1H3.781C1.708 11 0 9.366 0 7.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383z"
+            />
+            <path
+              d="M7.646 15.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 14.293V5.5a.5.5 0 0 0-1 0v8.793l-2.146-2.147a.5.5 0 0 0-.708.708l3 3z"
+            />
+          </svg>
+        </div>
       </div>
 
       <div>
@@ -94,6 +125,12 @@
       @cancel="toggleDeleteModal"
       @confirm="deleteRecord"
     />
+    <input
+      type="file"
+      id="upload"
+      style="display: none"
+      @change="uploadSubmit"
+    />
   </div>
   <div v-else>Loading...</div>
 </template>
@@ -104,6 +141,7 @@ import DeletePopup from "../components/DeletePopup.vue";
 import ES from "../plugins/eventService";
 import PrimaryButton from "../components/PrimaryButton.vue";
 import SecondaryButton from "../components/SecondaryButton.vue";
+
 export default {
   components: {
     EditPopup,
@@ -137,6 +175,32 @@ export default {
     goToArtist() {
       this.$router.push("/artists/" + this.record.artist);
     },
+    selectImage() {
+      document.getElementById("upload").click();
+    },
+    uploadSubmit() {
+      var formdata = new FormData();
+      formdata.append("file", document.getElementById("upload").files[0]);
+      ES.postRecordImage(this.record.id, formdata).then((res) => {
+        if (res.ok) {
+          document.getElementById("upload").value = "";
+          const elements = document.getElementsByClassName("coverimage");
+          for (let index = 0; index < elements.length; index++) {
+            const element = elements[index];
+            element.src = element.src + "&t=" + new Date().getTime();
+          }
+          this.applyBlur();
+          this.applyBorder();
+          document
+            .getElementsByClassName("coverimage")[1]
+            .classList.remove("noborder");
+        } else {
+          if (res.status === 415) {
+            alert("Please select an image file!");
+          }
+        }
+      });
+    },
     goToYoutubeSearch(song) {
       window
         .open(
@@ -159,8 +223,6 @@ export default {
     cancelEdit() {
       this.record = this.originalRecord;
       this.toggleEditModal();
-      this.applyBlur();
-      this.applyBorder();
     },
     saveEdit() {
       this.record.creator = null;
@@ -183,6 +245,30 @@ export default {
         }
       });
     },
+    deleteImage(none) {
+      ES.deleteRecordImage(this.record.id, none)
+        .then((res) => {
+          const elements = document.getElementsByClassName("coverimage");
+          for (let index = 0; index < elements.length; index++) {
+            const element = elements[index];
+            element.src = element.src + "&t=" + new Date().getTime();
+          }
+          if (!none)
+            document
+              .getElementsByClassName("coverimage")[1]
+              .classList.add("noborder");
+          else
+            document
+              .getElementsByClassName("coverimage")[1]
+              .classList.remove("noborder");
+          this.applyBlur();
+          this.applyBorder();
+          if (!res.ok) {
+            alert("Sorry, that did not work");
+          }
+        })
+        .catch(() => alert("Sorry, that did not work"));
+    },
   },
 };
 </script>
@@ -194,6 +280,7 @@ export default {
 }
 .image {
   width: 100%;
+  position: relative;
 }
 .left-split {
   width: 30%;
@@ -246,19 +333,23 @@ export default {
   z-index: 1;
   position: relative;
   width: 85%;
-  transition-duration: 2s;
+  transition: border-radius 2s transform 0.5s;
   border: solid thin rgba(0, 0, 0, 0.2);
 }
 .foreground-blur {
   border-radius: 1rem;
-  transition-duration: 2s;
+  transition: border-radius 2s, transform 0.5s;
 }
 .background {
   z-index: 0;
   position: absolute;
-  width: 25%;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 85%;
   height: auto;
-  transition-duration: 2s;
+  transition: filter 2s, transform 0.5s;
 
   backface-visibility: hidden;
   transform: translate3d(0, 0, 0);
@@ -273,7 +364,7 @@ export default {
   -moz-filter: blur(25px);
   -o-filter: blur(25px);
   -ms-filter: blur(25px);
-  transition-duration: 2s;
+  transition: filter 2s, transform 0.5s;
 }
 .infopanel {
   margin-top: 2rem;
@@ -322,5 +413,50 @@ export default {
 }
 .disabled {
   display: none;
+}
+.image:hover img {
+  transform: translateX(-40%);
+  transition: transform 0.5s;
+}
+.delete-image-button {
+  position: absolute;
+  top: 0;
+  right: 10px;
+  bottom: 0;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  gap: 2rem;
+  opacity: 0;
+  transition: opacity 300ms;
+}
+.image:hover .delete-image-button {
+  opacity: 1;
+  transition: opacity 300ms;
+}
+.trash-can {
+  transform: scale(1, 1);
+  transition: transform 0.3s;
+}
+.trash-can:hover {
+  color: var(--primary-color);
+  transform: scale(1.1, 1.1);
+  transition: transform 0.3s;
+}
+.set-default-image {
+  transform: scale(1, 1);
+  transition: transform 0.3s;
+}
+.set-default-image:hover {
+  color: var(--primary-color);
+  transform: scale(1.1, 1.1);
+  transition: transform 0.3s;
+}
+.noborder {
+  border: none;
 }
 </style>

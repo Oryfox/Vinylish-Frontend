@@ -9,7 +9,6 @@
       <div class="modal-content-pane">
         <div class="input-holder" v-if="getInput">
           <div class="property">
-            <label for="artist">Artist name</label>
             <input
               type="text"
               id="title"
@@ -17,10 +16,10 @@
               v-model="this.artist"
               @keyup.enter="submit"
               @keydown="resetMessage"
+              placeholder="Artist name"
             />
           </div>
           <div class="property">
-            <label for="title">Album title</label>
             <input
               type="text"
               id="title"
@@ -28,6 +27,7 @@
               v-model="this.title"
               @keyup.enter="submit"
               @keydown="resetMessage"
+              placeholder="Album title"
             />
           </div>
           <span class="message" v-if="message">{{ message }}</span>
@@ -50,6 +50,7 @@
 
 <script>
 import ES from "../plugins/eventService";
+
 export default {
   props: {
     record: null,
@@ -219,5 +220,18 @@ export default {
 .message {
   color: red;
   font-size: 0.8rem;
+}
+input[type*="text"] {
+  border-radius: 0.5rem;
+  border: solid thin rgba(0, 0, 0, 0.2);
+  padding: 0.2rem 0.5rem;
+  color: rgba(0, 0, 0, 0.7);
+  caret-color: rgba(0, 0, 0, 0.4);
+}
+input[type*="text"]:focus {
+  outline: none !important;
+  border-radius: 0.5rem;
+  border: solid thin rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.2);
 }
 </style>

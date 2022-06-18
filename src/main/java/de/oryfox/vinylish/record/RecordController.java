@@ -8,7 +8,6 @@ import de.oryfox.vinylish.user.UserRepository;
 import lombok.SneakyThrows;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
@@ -20,7 +19,6 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -161,51 +159,30 @@ public class RecordController {
         }
     }
 
+    @SneakyThrows
     @PostMapping("image")
-    @ConditionalOnProperty("vinylish.enable-custom-images")
-    public void addImage(@RequestParam("id") Long id, @RequestPart("image") MultipartFile file) {
-        var recordOpt = recordRepository.findById(id);
-        if (recordOpt.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Album does not exist");
-        }
-        try (var fos = new FileOutputStream("images/" + id)) {
-            file.getInputStream().transferTo(fos);
-            fos.close();
-            recordOpt.get().setImageType(ImageType.CUSTOM);
-            recordRepository.save(recordOpt.get());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @PutMapping("image")
-    @ConditionalOnProperty("vinylish.enable-custom-images")
-    public void setImage(@RequestParam("id") Long id, @RequestPart("image") MultipartFile file) {
-        var recordOpt = recordRepository.findById(id);
-        if (recordOpt.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Album does not exist");
-        }
-        try (var fos = new FileOutputStream("images/" + id)) {
-            file.getInputStream().transferTo(fos);
-            fos.close();
-            recordOpt.get().setImageType(ImageType.CUSTOM);
-            recordRepository.save(recordOpt.get());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void getUserImage(@RequestParam String token, @RequestParam Long id, @RequestPart MultipartFile file) {
+        var user = userController.check(token);
+        var record = recordRepository.findById(id, user);
+        if (record.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        if (file.getContentType() == null || !file.getContentType().toLowerCase().contains("image"))
+            throw new ResponseStatusException(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Please provide image");
+        Files.write(new File("images/" + record.get().getId()).toPath(), file.getBytes());
+        record.get().setImageType(ImageType.CUSTOM);
+        recordRepository.save(record.get());
     }
 
     @SneakyThrows
     @DeleteMapping("image")
-    @ConditionalOnProperty("vinylish.enable-custom-images")
-    public void removeImage(@RequestParam("id") Long id) {
-        var recordOpt = recordRepository.findById(id);
-        if (recordOpt.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Album does not exist");
-        }
-        Files.deleteIfExists(new File("images/" + recordOpt.get().getId()).toPath());
-        recordOpt.get().setImageType(ImageType.DEFAULT);
-        recordRepository.save(recordOpt.get());
+    public void deleteImage(@RequestParam Long id, @RequestParam(required = false) boolean none, @RequestHeader String token) {
+        var user = userController.check(token);
+        var record = recordRepository.findById(id, user);
+        if (record.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        record.get().setImageType(none ? ImageType.NONE : ImageType.DEFAULT);
+        recordRepository.save(record.get());
+        Files.deleteIfExists(new File("images/" + record.get().getId()).toPath());
     }
 
     public int getReleaseYear(String artist, String title) {
