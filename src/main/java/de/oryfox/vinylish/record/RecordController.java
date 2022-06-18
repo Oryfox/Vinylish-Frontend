@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -138,7 +139,7 @@ public class RecordController {
                     opt.get().setImageType(ImageType.CUSTOM);
                     recordRepository.save(opt.get());
                     return getImage(id);
-                } catch (FileNotFoundException ignored) {
+                } catch (MalformedURLException | FileNotFoundException ignored) {
                     opt.get().setImageType(ImageType.DEFAULT);
                     recordRepository.save(opt.get());
                     return ResponseEntity.ok(new InputStreamResource(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("icon.png"))));

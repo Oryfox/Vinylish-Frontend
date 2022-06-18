@@ -1,5 +1,5 @@
 <template>
-  <div class="root" v-if="error === null">
+  <div class="root" v-if="error === null && this.innerWidth >= 900">
     <div class="orderholder">
       <label for="order">Order by</label>
 
@@ -98,6 +98,14 @@
       v-if="selectVisible"
     />
   </div>
+  <div v-else-if="error === null && innerWidth < 900" class="mobile-list">
+    <MobileItem
+      v-for="record in records"
+      :key="record.id"
+      :record="record"
+      class="mobile-item"
+    />
+  </div>
   <div v-else>{{ error }}</div>
 </template>
 
@@ -108,6 +116,7 @@ import CreationSelect from "../components/CreationSelect.vue";
 import ES from "../plugins/eventService";
 import emitter from "tiny-emitter/instance";
 import GridItem from "../components/GridItem.vue";
+import MobileItem from "../components/MobileItem.vue";
 import Selector from "../components/Selector.vue";
 export default {
   components: {
@@ -115,20 +124,22 @@ export default {
     EditPopup,
     CreationSelect,
     GridItem,
-    Selector
+    Selector,
+    MobileItem,
   },
   data() {
     return {
       records: [],
       sortby: {
-        display: 'Unsorted',
-        type: null
+        display: "Unsorted",
+        type: null,
       },
       error: null,
       newRecord: null,
       selectVisible: false,
       grid: false,
       search: "",
+      innerWidth: window.innerWidth,
     };
   },
   created() {
@@ -146,6 +157,12 @@ export default {
           record.artist.toLowerCase().includes(this.search.toLowerCase())
       );
     },
+  },
+  mounted() {
+    window.addEventListener("resize", this.onResize);
+  },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.onResize);
   },
   methods: {
     getRecords() {
@@ -222,6 +239,9 @@ export default {
     gridsettings() {
       this.$cookies.set("grid", this.grid === false ? "No" : "Yes");
     },
+    onResize() {
+      this.innerWidth = window.innerWidth;
+    },
   },
 };
 </script>
@@ -236,6 +256,15 @@ export default {
   flex-direction: column;
   gap: 1.5rem;
   padding: 0 1rem 1rem 1rem;
+}
+.mobile-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-self: left;
+  flex: 0;
+}
+.mobile-item {
+  width: 50%;
 }
 .grid {
   display: inline-flex;

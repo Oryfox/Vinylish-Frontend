@@ -1,5 +1,5 @@
 <template>
-  <nav>
+  <nav v-if="innerWidth >= 900">
     <img src="/icon.png" alt="Logo" @click="this.$router.push('/about')" />
     <!--<RouterLink to="/" class="rl">Home</RouterLink>
     <RouterLink to="/about" class="rl">About</RouterLink>-->
@@ -120,6 +120,12 @@
       </div>
     </div>
   </nav>
+  <nav
+    v-else-if="cookie && innerWidth <= 900"
+    style="display: flex; padding: 1rem"
+  >
+    <PrimaryButton @click="logout" v-text="'Logout'" style="flex: 1" />
+  </nav>
 </template>
 
 <script>
@@ -138,12 +144,19 @@ export default {
       cookie: null,
       showUserPopup: false,
       user: null,
+      innerWidth: window.innerWidth,
     };
   },
   created() {
     this.cookie = this.$cookies.get("token");
     emitter.on("tokenSet", (token) => (this.cookie = token));
     emitter.on("tokenRemove", () => (this.cookie = null));
+  },
+  mounted() {
+    window.addEventListener("resize", this.onResize);
+  },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.onResize);
   },
   methods: {
     createNew() {
@@ -167,6 +180,9 @@ export default {
       this.user = null;
       this.showUserPopup = false;
       this.$router.push("/logout");
+    },
+    onResize() {
+      this.innerWidth = window.innerWidth;
     },
   },
 };

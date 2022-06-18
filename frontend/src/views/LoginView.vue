@@ -1,12 +1,13 @@
 <template>
   <div style="display: flex; justify-content: center">
-    <div class="base">
+    <div :class="innerWidth >= 900 ? 'base' : 'base-mobile'">
       <input
         type="text"
         v-model="username"
         placeholder="Email"
         @keyup.enter="login"
         @keydown="resetMessage"
+        class="textfield"
       />
       <input
         type="password"
@@ -14,10 +15,11 @@
         placeholder="Password"
         @keyup.enter="login"
         @keydown="resetMessage"
+        class="textfield"
       />
       <span class="message">{{ message }}</span>
 
-      <div class="btn-group">
+      <div :class="innerWidth >= 900 ? 'btn-group' : 'btn-list'">
         <button class="btn btn-outline-primary" @click="register">
           Register
         </button>
@@ -36,7 +38,14 @@ export default {
       username: "",
       password: "",
       message: null,
+      innerWidth: window.innerWidth,
     };
+  },
+  mounted() {
+    window.addEventListener("resize", this.onResize);
+  },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.onResize);
   },
   methods: {
     login() {
@@ -88,6 +97,9 @@ export default {
     resetMessage() {
       this.message = null;
     },
+    onResize() {
+      this.innerWidth = window.innerWidth;
+    },
   },
 };
 </script>
@@ -103,9 +115,21 @@ export default {
   border-radius: 1rem;
   padding: 1rem;
 }
+.base-mobile {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 1rem;
+  padding: 1rem;
+}
 .message {
   color: red;
   font-size: 0.8rem;
+}
+.btn-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 .btn-primary {
   background: var(--bright-color);
@@ -123,5 +147,18 @@ export default {
 }
 .btn-outline-primary:focus {
   box-shadow: 1px 1px 10px 1px var(--bright-color);
+}
+.textfield {
+  border-radius: 0.5rem;
+  border: solid thin rgba(0, 0, 0, 0.2);
+  padding: 0.2rem 0.5rem;
+  color: rgba(0, 0, 0, 0.7);
+  caret-color: rgba(0, 0, 0, 0.4);
+}
+.textfield:focus {
+  outline: none !important;
+  border-radius: 0.5rem;
+  border: solid thin rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.2);
 }
 </style>
