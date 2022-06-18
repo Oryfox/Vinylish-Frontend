@@ -139,5 +139,8 @@ export default {
     },
     deleteRecordImage(id, none) {
         return hDelete("record/image?id=" + id + "&none=" + none);
+    },
+    getApiVersion() {
+        return fetch(baseurl + "user/version")
     }
 }

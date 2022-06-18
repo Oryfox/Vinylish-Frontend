@@ -33,3 +33,5 @@ jobs:
         tags: |
           docker.oryfox.de/vinylapi:latest 
         push: true
+        build-args: |
+          version=${{github.sha}}

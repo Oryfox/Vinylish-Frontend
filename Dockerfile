@@ -35,4 +35,6 @@ EXPOSE 8080:8080
 WORKDIR /app
 RUN mkdir /app/images
 COPY --from=maven /build/target/vinylish-*.jar ./api.jar
+ARG version
+ENV API_VERSION=$version
 ENTRYPOINT ["java","-jar","api.jar"]

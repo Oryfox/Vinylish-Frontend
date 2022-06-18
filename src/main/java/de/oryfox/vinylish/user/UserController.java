@@ -3,8 +3,8 @@ package de.oryfox.vinylish.user;
 import de.oryfox.vinylish.ImageType;
 import de.oryfox.vinylish.user.session.Session;
 import de.oryfox.vinylish.user.session.SessionRepository;
-import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
@@ -18,11 +18,18 @@ import java.io.File;
 import java.nio.file.Files;
 
 @RestController
-@AllArgsConstructor
 @RequestMapping("user")
 public class UserController {
     final UserRepository userRepository;
     final SessionRepository sessionRepository;
+
+    public UserController(UserRepository userRepository, SessionRepository sessionRepository) {
+        this.userRepository = userRepository;
+        this.sessionRepository = sessionRepository;
+    }
+
+    @Value("${api.version}")
+    private String apiVersion;
 
     @PostMapping
     public void createUser(@RequestBody User user) {
@@ -125,5 +132,10 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         sessionRepository.delete(session.get());
+    }
+
+    @GetMapping("version")
+    public String version() {
+        return apiVersion;
     }
 }

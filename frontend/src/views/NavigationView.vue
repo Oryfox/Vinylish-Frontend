@@ -1,6 +1,11 @@
 <template>
   <nav v-if="innerWidth >= 900">
-    <img src="/icon.png" alt="Logo" @click="this.$router.push('/about')" />
+    <img
+      src="/icon.png"
+      :alt="apiVersion"
+      :title="apiVersion"
+      @click="this.$router.push('/about')"
+    />
     <!--<RouterLink to="/" class="rl">Home</RouterLink>
     <RouterLink to="/about" class="rl">About</RouterLink>-->
     <div v-if="cookie" class="navb">
@@ -166,9 +171,13 @@ export default {
       user: null,
       innerWidth: window.innerWidth,
       search: "",
+      apiVersion: "",
     };
   },
   created() {
+    ES.getApiVersion()
+      .then((res) => res.text())
+      .then((text) => (this.apiVersion = text));
     this.cookie = this.$cookies.get("token");
     emitter.on("tokenSet", (token) => (this.cookie = token));
     emitter.on("tokenRemove", () => (this.cookie = null));
