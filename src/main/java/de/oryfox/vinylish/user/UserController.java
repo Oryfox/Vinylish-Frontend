@@ -111,11 +111,6 @@ public class UserController {
     public String login(@RequestBody User user) {
         var opt = userRepository.findByEmail(user.getEmail());
         if (opt.isPresent() && !opt.get().isDisabled() && new BCryptPasswordEncoder().matches(user.getPassword(), opt.get().getPassword())) {
-            var checkSession = sessionRepository.findByUser(opt.get());
-            if (checkSession.isPresent()) {
-                return checkSession.get().getToken();
-            }
-
             var session = new Session(opt.get());
             return sessionRepository.save(session).getToken();
         } else {
