@@ -7,13 +7,17 @@ import ES from "../plugins/eventService";
 import emitter from "tiny-emitter/instance";
 export default {
   created() {
-    ES.logout().then((res) => {
-      if (res.ok) {
+    ES.logout()
+      .then((res) => {
         this.$cookies.remove("token");
         emitter.emit("tokenRemove");
         this.$router.push("/");
-      }
-    });
+      })
+      .catch((error) => {
+        this.$cookies.remove("token");
+        emitter.emit("tokenRemove");
+        this.$router.push("/");
+      });
   },
 };
 </script>

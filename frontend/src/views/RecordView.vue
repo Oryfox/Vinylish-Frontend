@@ -32,6 +32,7 @@
           type="text"
           v-model="search"
           placeholder="Search..."
+          @keyup="emitSearch"
         />
       </div>
 
@@ -100,7 +101,7 @@
   </div>
   <div v-else-if="error === null && innerWidth < 900" class="mobile-list">
     <MobileItem
-      v-for="record in records"
+      v-for="record in searchRecords"
       :key="record.id"
       :record="record"
       class="mobile-item"
@@ -145,6 +146,9 @@ export default {
   created() {
     emitter.on("createNew", () => {
       this.toggleNewRecordModal();
+    });
+    emitter.on("search", (query) => {
+      this.search = query;
     });
     this.getRecords();
     this.grid = this.$cookies.get("grid") === "Yes";
@@ -242,6 +246,9 @@ export default {
     onResize() {
       this.innerWidth = window.innerWidth;
     },
+    emitSearch() {
+      emitter.emit("searchReverse", this.search);
+    },
   },
 };
 </script>
@@ -262,6 +269,7 @@ export default {
   flex-wrap: wrap;
   justify-self: left;
   flex: 0;
+  margin-top: 6.75rem;
 }
 .mobile-item {
   width: 50%;

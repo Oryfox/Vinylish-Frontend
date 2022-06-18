@@ -20,7 +20,11 @@
       <span class="message">{{ message }}</span>
 
       <div :class="innerWidth >= 900 ? 'btn-group' : 'btn-list'">
-        <button class="btn btn-outline-primary" @click="register">
+        <button
+          class="btn btn-outline-primary"
+          @click="register"
+          v-if="innerWidth >= 900"
+        >
           Register
         </button>
         <button class="btn btn-primary" @click="login">Login</button>

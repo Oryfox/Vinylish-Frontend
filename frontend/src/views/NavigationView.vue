@@ -122,9 +122,29 @@
   </nav>
   <nav
     v-else-if="cookie && innerWidth <= 900"
-    style="display: flex; padding: 1rem"
+    style="
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 1rem;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6.75rem;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(5px);
+    "
   >
-    <PrimaryButton @click="logout" v-text="'Logout'" style="flex: 1" />
+    <PrimaryButton @click="logout" v-text="'Logout'" style="width: 100%" />
+    <input
+      type="text"
+      id="searchfield"
+      style="width: 100%"
+      placeholder="Search.."
+      @keyup="emitSearch"
+      v-model="search"
+    />
   </nav>
 </template>
 
@@ -145,12 +165,16 @@ export default {
       showUserPopup: false,
       user: null,
       innerWidth: window.innerWidth,
+      search: "",
     };
   },
   created() {
     this.cookie = this.$cookies.get("token");
     emitter.on("tokenSet", (token) => (this.cookie = token));
     emitter.on("tokenRemove", () => (this.cookie = null));
+    emitter.on("searchReverse", (query) => {
+      this.search = query;
+    });
   },
   mounted() {
     window.addEventListener("resize", this.onResize);
@@ -183,6 +207,9 @@ export default {
     },
     onResize() {
       this.innerWidth = window.innerWidth;
+    },
+    emitSearch() {
+      emitter.emit("search", this.search);
     },
   },
 };
@@ -379,5 +406,18 @@ img:hover {
 }
 .settings-button::after {
   content: "Settings";
+}
+#searchfield {
+  border-radius: 0.5rem;
+  border: solid thin rgba(0, 0, 0, 0.2);
+  padding: 0.2rem 0.5rem;
+  color: rgba(0, 0, 0, 0.7);
+  caret-color: rgba(0, 0, 0, 0.4);
+}
+#searchfield:focus {
+  outline: none !important;
+  border-radius: 0.5rem;
+  border: solid thin rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.2);
 }
 </style>
