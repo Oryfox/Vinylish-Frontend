@@ -138,6 +138,10 @@
               v-text="'Logout all active sessions'"
             />
           </div>
+          <div>
+            <h5>Stats</h5>
+            Overall record count: {{ count }}
+          </div>
         </div>
 
         <PrimaryButton
@@ -197,6 +201,7 @@ export default {
       apiVersion: "",
       settingsClassName: "hidden",
       grid: this.$cookies.get("grid") === "Yes",
+      count: "0",
     };
   },
   created() {
@@ -224,6 +229,9 @@ export default {
       ES.getUser()
         .then((res) => res.json())
         .then((json) => (this.user = json));
+      ES.getCount()
+        .then((res) => res.text())
+        .then((text) => (this.count = text));
       this.grid = this.$cookies.get("grid") === "Yes";
       if (!this.showUserPopup) {
         this.settingsClassName = "hidden";
@@ -331,7 +339,7 @@ nav {
 .settings-pane {
   animation: 0.5s ease 0s expand;
   opacity: 1;
-  height: 200px;
+  height: 235px;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -491,13 +499,13 @@ img:hover {
     opacity: 0;
   }
   100% {
-    height: 200px;
+    height: 235px;
     opacity: 1;
   }
 }
 @keyframes shrink {
   0% {
-    height: 200px;
+    height: 235px;
     opacity: 1;
   }
   100% {

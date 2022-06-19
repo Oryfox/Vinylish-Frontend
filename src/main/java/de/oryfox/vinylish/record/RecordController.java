@@ -73,6 +73,11 @@ public class RecordController {
         return record;
     }
 
+    @GetMapping("count")
+    public Long getCount(@RequestHeader String token) {
+        return recordRepository.countAllByCreator(userController.check(token));
+    }
+
     @GetMapping
     public ResponseEntity<Object> listRecord(@RequestHeader String token, @RequestParam(required = false) Long id, @RequestParam(required = false) String sort) {
         var user = userController.check(token);

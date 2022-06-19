@@ -145,5 +145,8 @@ export default {
     },
     logoutAll() {
         return put("user/logout/all", null)
+    },
+    getCount() {
+        return get("record/count");
     }
 }
