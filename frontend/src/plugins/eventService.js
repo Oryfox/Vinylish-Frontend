@@ -142,5 +142,8 @@ export default {
     },
     getApiVersion() {
         return fetch(baseurl + "user/version")
+    },
+    logoutAll() {
+        return put("user/logout/all", null)
     }
 }

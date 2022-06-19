@@ -36,10 +36,15 @@
         />
       </div>
 
-      <div class="toggleGrid">
+      <div class="toggleGrid" v-show="false">
         <b>List view</b>
         <label class="switch">
-          <input type="checkbox" v-model="grid" @change="gridsettings" />
+          <input
+            type="checkbox"
+            id="gridToggler"
+            v-model="grid"
+            @change="gridsettings"
+          />
           <span :class="grid ? 'slider-active round' : 'slider round'"></span>
         </label>
         <b>Grid view</b>
@@ -149,6 +154,9 @@ export default {
     });
     emitter.on("search", (query) => {
       this.search = query;
+    });
+    emitter.on("toggleGrid", () => {
+      document.getElementById("gridToggler").click();
     });
     this.getRecords();
     this.grid = this.$cookies.get("grid") === "Yes";

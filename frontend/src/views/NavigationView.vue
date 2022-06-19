@@ -117,6 +117,29 @@
           </div>
         </div>
 
+        <div id="settings-pane" :class="settingsClassName">
+          <div>
+            <h5>General</h5>
+            <div class="toggleGrid">
+              Enable Gridview
+              <label class="switch">
+                <input type="checkbox" v-model="grid" @change="toggleGrid" />
+                <span
+                  :class="grid ? 'slider-active round' : 'slider round'"
+                ></span>
+              </label>
+            </div>
+          </div>
+          <div>
+            <h5>Account</h5>
+            <PrimaryButton
+              @click="logoutAll"
+              style="width: 100%"
+              v-text="'Logout all active sessions'"
+            />
+          </div>
+        </div>
+
         <PrimaryButton
           class="logout-button"
           @click="logout"
@@ -172,6 +195,8 @@ export default {
       innerWidth: window.innerWidth,
       search: "",
       apiVersion: "",
+      settingsClassName: "hidden",
+      grid: this.$cookies.get("grid") === "Yes",
     };
   },
   created() {
@@ -199,6 +224,10 @@ export default {
       ES.getUser()
         .then((res) => res.json())
         .then((json) => (this.user = json));
+      this.grid = this.$cookies.get("grid") === "Yes";
+      if (!this.showUserPopup) {
+        this.settingsClassName = "hidden";
+      }
       this.showUserPopup = !this.showUserPopup;
     },
     goToProfile() {
@@ -206,19 +235,34 @@ export default {
       this.$router.push("/profile");
     },
     goToSettings() {
-      this.showUserPopup = false;
-      this.$router.push("/settings");
+      if (this.settingsClassName === "hidden") {
+        this.settingsClassName = "settings-pane";
+      } else if (this.settingsClassName === "hide") {
+        this.settingsClassName = "settings-pane";
+      } else {
+        this.settingsClassName = "hide";
+      }
     },
     logout() {
       this.user = null;
       this.showUserPopup = false;
       this.$router.push("/logout");
     },
+    logoutAll() {
+      ES.logoutAll().then(() => {
+        this.user = null;
+        this.showUserPopup = false;
+        this.$router.push("/logout");
+      });
+    },
     onResize() {
       this.innerWidth = window.innerWidth;
     },
     emitSearch() {
       emitter.emit("search", this.search);
+    },
+    toggleGrid() {
+      emitter.emit("toggleGrid");
     },
   },
 };
@@ -284,21 +328,14 @@ nav {
   cursor: pointer;
   stroke: var(--text-color);
 }
-/*.rl::after  {*/
-/*  display: inline-block;*/
-/*  content: "";*/
-/*  position: absolute;*/
-/*  width: 2px;*/
-/*  height: 20px;*/
-/*  right: -0.7rem;*/
-/*  border-right: 2px solid var(--text-color);*/
-/*}*/
-/*.rl:last-child {*/
-/*  padding-right: 0;*/
-/*}*/
-/*.rl:last-child::after {*/
-/*  display: none;*/
-/*}*/
+.settings-pane {
+  animation: 0.5s ease 0s expand;
+  opacity: 1;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 .underline:hover::after {
   transform: translate3d(0, 0, 0);
   opacity: 1;
@@ -337,12 +374,18 @@ img:hover {
 }
 .userPopup {
   width: 20rem;
-  height: 15.5rem;
   background: #fefefe;
   position: absolute;
   right: 18px;
   /* top: 4rem; */
   filter: drop-shadow(1px 1px 10px rgba(0, 0, 0, 0.4));
+  -webkit-filter: drop-shadow(1px 1px 10px rgba(0, 0, 0, 0.4));
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
+  -webkit-transform: translate3d(0, 0, 0);
+  -moz-transform: translate3d(0, 0, 0);
   border-top-left-radius: 0.5rem;
   border-bottom-left-radius: 0.5rem;
   border-bottom-right-radius: 0.5rem;
@@ -373,6 +416,7 @@ img:hover {
 .logout-button {
   margin-top: auto;
   transition-duration: 0.3s;
+  z-index: 1;
 }
 .logout-button:hover {
   box-shadow: 1px 1px 10px 1px var(--primary-color);
@@ -387,7 +431,7 @@ img:hover {
 .popup-button {
   border: solid thin rgba(0, 0, 0, 0.2);
   flex: 1;
-  height: 100%;
+  height: 8.15rem;
   border-radius: 0.5rem;
   display: flex;
   align-items: center;
@@ -428,5 +472,120 @@ img:hover {
   border-radius: 0.5rem;
   border: solid thin rgba(0, 0, 0, 0.2);
   box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.2);
+}
+.hidden {
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+}
+.hide {
+  overflow: hidden;
+  height: 0;
+  opacity: 0;
+  animation: 0.5s shrink 0s ease;
+}
+
+@keyframes expand {
+  0% {
+    height: 0;
+    opacity: 0;
+  }
+  100% {
+    height: 200px;
+    opacity: 1;
+  }
+}
+@keyframes shrink {
+  0% {
+    height: 200px;
+    opacity: 1;
+  }
+  100% {
+    height: 0;
+    opacity: 0;
+  }
+}
+.toggleGrid {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--primary-color);
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+.slider-active {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--text-color);
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+.slider-active:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+.slider.round {
+  border-radius: 34px;
+}
+.slider.round:before {
+  border-radius: 50%;
+}
+
+input:checked + .slider-active:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+.slider-active.round {
+  border-radius: 34px;
+}
+.slider-active.round:before {
+  border-radius: 50%;
 }
 </style>

@@ -134,6 +134,16 @@ public class UserController {
         sessionRepository.delete(session.get());
     }
 
+    @PutMapping("logout/all")
+    public void logoutAll(@RequestHeader String token) {
+        var session = sessionRepository.findByToken(token);
+        if (session.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        var sessions = sessionRepository.findAllByUser(session.get().getUser());
+        sessionRepository.deleteAll(sessions);
+    }
+
     @GetMapping("version")
     public String version() {
         return apiVersion;
