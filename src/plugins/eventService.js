@@ -1,4 +1,4 @@
-import router from "../router/index";
+import router from "../router";
 import Cookies from "js-cookie";
 
 let baseurl = import.meta.env.VITE_HOST;

@@ -109,8 +109,8 @@
 </template>
 
 <script>
-import PrimaryButton from "../components/PrimaryButton.vue";
-import SecondaryButton from "../components/SecondaryButton.vue";
+import PrimaryButton from "./PrimaryButton.vue";
+import SecondaryButton from "./SecondaryButton.vue";
 
 export default {
   components: {
