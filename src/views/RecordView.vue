@@ -161,6 +161,11 @@ export default {
     this.getRecords();
     this.grid = this.$cookies.get("grid") === "Yes";
   },
+  unmounted() {
+    emitter.off("createNew");
+    emitter.off("search");
+    emitter.off("toggleGrid");
+  },
   computed: {
     searchRecords() {
       return this.records.filter(
