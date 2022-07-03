@@ -148,5 +148,8 @@ export default {
     },
     getCount() {
         return get("record/count");
+    },
+    youtubeSearch(query) {
+        return fetch("https://yt.oryfox.de/?query=" + encodeURI(query));
     }
 }

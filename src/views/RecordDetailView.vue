@@ -141,6 +141,7 @@ import DeletePopup from "../components/DeletePopup.vue";
 import ES from "../plugins/eventService";
 import PrimaryButton from "../components/PrimaryButton.vue";
 import SecondaryButton from "../components/SecondaryButton.vue";
+import emitter from "tiny-emitter/instance";
 
 export default {
   components: {
@@ -202,15 +203,18 @@ export default {
       });
     },
     goToYoutubeSearch(song) {
-      window
-        .open(
-          "https://youtube.com/results?search_query=" +
-            encodeURIComponent(this.record.artist) +
-            "+" +
-            encodeURIComponent(song),
-          "_blank"
-        )
-        .focus();
+      ES.youtubeSearch(this.record.artist + " " + song).then((res) => {
+        if (res.ok) {
+          res.json().then((json) => {
+            emitter.emit(
+              "play",
+              json[0].id.videoId,
+              this.record.artist + " - " + song,
+              this.record.id
+            );
+          });
+        }
+      });
     },
     toggleEditModal() {
       if (!document.getElementById("edit-modal").classList.toggle("disabled")) {

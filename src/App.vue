@@ -1,6 +1,7 @@
 <script setup>
 import { RouterLink } from "vue-router";
 import NavigationView from "./views/NavigationView.vue";
+import Player from "./components/Player.vue";
 </script>
 
 <template>
@@ -10,6 +11,7 @@ import NavigationView from "./views/NavigationView.vue";
       <component :is="Component" ref="current"> </component>
     </transition>
   </router-view>
+  <Player />
 </template>
 
 <style scoped>

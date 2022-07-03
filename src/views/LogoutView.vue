@@ -7,6 +7,7 @@ import ES from "../plugins/eventService";
 import emitter from "tiny-emitter/instance";
 export default {
   created() {
+    emitter.emit("play", null, null, null);
     ES.logout()
       .then((res) => {
         this.$cookies.remove("token");
