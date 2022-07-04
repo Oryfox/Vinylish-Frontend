@@ -51,6 +51,7 @@
         allowfullscreen
         class="fgrow"
         :key="videoId"
+        @load="this.hidden = false"
       ></iframe>
     </div>
   </div>
@@ -63,16 +64,18 @@ export default {
     return {
       videoId: null,
       videoTitle: null,
-      hidden: false,
+      hidden: true,
       recordId: null,
     };
   },
   created() {
     emitter.on("play", (id, title, record) => {
+      if (this.videoId === null) {
+        this.hidden = true;
+      }
       this.videoId = id;
       this.videoTitle = title;
       this.recordId = record;
-      this.hidden = false;
     });
   },
   methods: {
@@ -94,7 +97,7 @@ export default {
   z-index: 4;
   top: 4.5rem;
   right: 8px;
-  width: 416px;
+  width: 424px;
   height: 318px;
   text-align: center;
   transition-duration: 300ms;
@@ -106,7 +109,7 @@ export default {
 }
 .base-hidden {
   top: 2rem;
-  right: -360px;
+  right: -368px;
   transition-duration: 300ms;
   background: transparent;
   backdrop-filter: none;
