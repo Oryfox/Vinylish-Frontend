@@ -108,7 +108,6 @@ export default {
   background: rgba(255, 255, 255, 0.4);
 }
 .base-hidden {
-  top: 2rem;
   right: -368px;
   transition-duration: 300ms;
   background: transparent;
